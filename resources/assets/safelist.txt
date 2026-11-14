@@ -52,3 +52,4 @@ alert-success alert-warning alert-danger alert-info alert-secondary
 # icons named in PHP (ReportBookController)
 #s-money-bill-transfer #s-hourglass-half #s-coins #s-percent #s-clock-rotate-left #s-chart-column
 d-print-block
+#s-arrows-rotate #s-building-columns

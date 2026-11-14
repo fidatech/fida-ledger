@@ -138,12 +138,12 @@ return [
     'roles' => [
         'owner' => ['label' => 'Company owner', 'can' => ['*']],
         'admin' => ['label' => 'Administrator', 'can' => ['*']],
-        'accountant' => ['label' => 'Accountant', 'can' => ['accounts.view', 'accounts.manage', 'money.view', 'money.create', 'money.void', 'transfers.create', 'invoices.view', 'invoices.manage', 'products.view', 'products.manage', 'journals.view', 'journals.create', 'reports.view', 'reports.export',
+        'accountant' => ['label' => 'Accountant', 'can' => ['accounts.view', 'accounts.manage', 'money.view', 'money.create', 'money.void', 'transfers.create', 'invoices.view', 'invoices.manage', 'products.view', 'products.manage', 'journals.view', 'journals.create', 'reports.view', 'reports.export', 'banking.view', 'banking.manage',
             'inventory.view', 'inventory.manage', 'purchases.view', 'purchases.manage', 'purchases.approve', 'sales.view', 'sales.manage', 'pos.use', 'pos.close', 'assets.view', 'assets.manage']],
         'cashier' => ['label' => 'Cashier', 'can' => ['accounts.view', 'money.view', 'money.create', 'transfers.create', 'invoices.view', 'products.view', 'pos.use', 'pos.close']],
         'salesperson' => ['label' => 'Salesperson', 'can' => ['accounts.view', 'money.view', 'invoices.view', 'invoices.manage', 'products.view', 'inventory.view', 'sales.view', 'sales.manage', 'pos.use']],
         'storekeeper' => ['label' => 'Storekeeper', 'can' => ['products.view', 'products.manage', 'inventory.view', 'inventory.manage', 'purchases.view', 'sales.view']],
         'payroll' => ['label' => 'HR / payroll manager', 'can' => ['payroll.view', 'payroll.manage']],
-        'viewer' => ['label' => 'Viewer', 'can' => ['accounts.view', 'money.view', 'invoices.view', 'products.view', 'inventory.view', 'purchases.view', 'sales.view', 'assets.view', 'journals.view', 'reports.view']],
+        'viewer' => ['label' => 'Viewer', 'can' => ['banking.view', 'accounts.view', 'money.view', 'invoices.view', 'products.view', 'inventory.view', 'purchases.view', 'sales.view', 'assets.view', 'journals.view', 'reports.view']],
     ],
 ];

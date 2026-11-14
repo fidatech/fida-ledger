@@ -16,7 +16,7 @@ class FixedAsset extends Model
 
     protected function casts(): array
     {
-        return ['acquired_on' => 'date', 'disposed_on' => 'date'];
+        return ['acquired_on' => \App\Casts\Day::class, 'disposed_on' => \App\Casts\Day::class];
     }
 
     public function category(): BelongsTo

@@ -140,6 +140,7 @@ abstract class CrudController extends Controller
             'canManage' => $this->managePermission === null || can_do($this->managePermission),
             'totals' => $this->totals($request),
             'headerLinks' => $this->headerLinks($request),
+            'headerActions' => $this->managePermission === null || can_do($this->managePermission) ? $this->headerActions($request) : [],
             'links' => fn (Model $record) => $this->rowLinks($record),
             'editable' => fn (Model $record) => $this->canEdit($record),
         ]);
@@ -192,6 +193,12 @@ abstract class CrudController extends Controller
 
     /** Small totals shown above the list: ['Total' => '1,200.00 USD']. */
     protected function totals(Request $request): array
+    {
+        return [];
+    }
+
+    /** Buttons in the title bar that do something (sent as POST): [['label' => .., 'url' => .., 'confirm' => ..]] */
+    protected function headerActions(Request $request): array
     {
         return [];
     }

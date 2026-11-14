@@ -23,7 +23,7 @@ class Invoice extends Model
 
     protected function casts(): array
     {
-        return ['date' => 'date', 'due_date' => 'date'];
+        return ['date' => \App\Casts\Day::class, 'due_date' => \App\Casts\Day::class];
     }
 
     public function customer(): BelongsTo

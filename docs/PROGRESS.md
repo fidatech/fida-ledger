@@ -1,6 +1,6 @@
 # Fida Ledger: progress
 
-Last updated: 2026-11-15 (stage 4). Branch: `development`.
+Last updated: 2026-11-15 (stage 5). Branch: `development`.
 
 ## Read this first
 
@@ -87,6 +87,20 @@ and a workflow test (`tests/Feature/BusinessModulesTest`, not run):
   employee payroll. The Reports page lists every report, grouped, by module and permission.
 - Tests written: `tests/Feature/ReportsTest`.
 
+## Built in stage 5 (written without being run, like the rest)
+
+Banking & Planning, for the Business version (hidden and refused for Starter):
+- Bank reconciliation per cash or bank account: CSV statement import (repeat-safe), automatic
+  matching by amount and date, manual match and unmatch, lists of what is on the statement but
+  not in the books and the reverse. Matching never posts or changes an entry.
+- Budgets: a yearly amount per income and expense account spread over twelve months, and a
+  budget-against-actual comparison for any range of months, with CSV.
+- Recurring Money In and Money Out: daily, weekly, monthly or yearly, an optional end date, a
+  rule for missed dates (post all, or only the latest), an hourly job (`ledger:recurring`) and
+  a "post what is due now" button. Each due date is posted once.
+- Date-only columns now use the `Day` cast, so dates compare the same on MySQL and on SQLite.
+- Tests written: `tests/Feature/BankingTest`.
+
 ## Not built yet
 
 Inside the Business modules:
@@ -107,7 +121,7 @@ Starter scope still missing:
 - PDF files made by the server (reports print through the browser, which can save a PDF).
 - Settings: custom roles, numbering sequences, branding, language, security, API access.
 - Dari and Pashto translations (the layout is RTL-ready; strings are English only).
-- Bank reconciliation, statement import, budgets, recurring transactions.
+- Scheduled reminders; bank statement formats other than CSV.
 - WhatsApp / RelayWA integration. The provider's API was not consulted yet.
 - Sanctum API.
 
@@ -121,6 +135,5 @@ API documentation, source ZIP.
 
 1. Run everything on MySQL (`docs/INSTALL-MAC.md`), fix what fails, then a browser pass on
    desktop and phone. Nothing below should start before this.
-2. Banking (reconciliation, imports), budgets, recurring transactions.
-3. The rest of the admin panel and of Settings; email verification, 2FA.
-4. Dari and Pashto translations; RelayWA; Sanctum API; documentation.
+2. The rest of the admin panel and of Settings; email verification, 2FA.
+3. Dari and Pashto translations; RelayWA; Sanctum API; documentation.

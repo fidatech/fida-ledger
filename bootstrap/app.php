@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\UserError;
+use App\Http\Middleware\BusinessPlan;
 use App\Http\Middleware\CanDo;
 use App\Http\Middleware\EnsureSubscribed;
 use App\Http\Middleware\RequireModule;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscribed' => EnsureSubscribed::class,
             'module' => RequireModule::class,
             'can.do' => CanDo::class,
+            'business' => BusinessPlan::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

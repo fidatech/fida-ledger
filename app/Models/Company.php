@@ -20,8 +20,8 @@ class Company extends Model
     {
         return [
             'setup_fee_paid' => 'boolean',
-            'subscription_ends_at' => 'date',
-            'locked_until' => 'date',
+            'subscription_ends_at' => \App\Casts\Day::class,
+            'locked_until' => \App\Casts\Day::class,
             'settings' => 'array',
         ];
     }

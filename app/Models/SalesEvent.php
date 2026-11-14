@@ -15,7 +15,7 @@ class SalesEvent extends Model
 
     protected function casts(): array
     {
-        return ['date' => 'date', 'lines' => 'array'];
+        return ['date' => \App\Casts\Day::class, 'lines' => 'array'];
     }
 
     public function code(): string

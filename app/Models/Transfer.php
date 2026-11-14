@@ -18,7 +18,7 @@ class Transfer extends Model
 
     protected function casts(): array
     {
-        return ['date' => 'date'];
+        return ['date' => \App\Casts\Day::class];
     }
 
     public function fromAccount(): BelongsTo

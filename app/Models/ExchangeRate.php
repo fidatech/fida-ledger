@@ -14,7 +14,7 @@ class ExchangeRate extends Model
 
     protected function casts(): array
     {
-        return ['date' => 'date'];
+        return ['date' => \App\Casts\Day::class];
     }
 
     /** The latest rate on or before a day, or null when none was ever entered. */

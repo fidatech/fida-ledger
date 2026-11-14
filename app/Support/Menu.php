@@ -119,7 +119,8 @@ class Menu
 
     private static function allowed(User $user, array $item): bool
     {
-        return (empty($item['can']) || can_do($item['can']))
+        return (empty($item['plan']) || company()?->plan?->code === $item['plan'])
+            && (empty($item['can']) || can_do($item['can']))
             && (empty($item['module']) || module_on($item['module']));
     }
 }

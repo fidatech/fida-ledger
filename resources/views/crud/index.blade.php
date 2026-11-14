@@ -8,6 +8,12 @@
     @foreach ($headerLinks as $link)
         <a class="btn btn-outline-soft" href="{{ $link['url'] }}">{{ $link['label'] }}</a>
     @endforeach
+    @foreach ($headerActions ?? [] as $action)
+        <form method="POST" action="{{ $action['url'] }}" class="d-inline" @if (! empty($action['confirm'])) data-confirm="{{ $action['confirm'] }}" data-confirm-ok="{{ $action['label'] }}" data-confirm-style="primary" @endif>
+            @csrf
+            <button type="submit" class="btn btn-outline-soft">{{ $action['label'] }}</button>
+        </form>
+    @endforeach
     @if ($canManage)
         <a class="btn btn-primary" href="{{ route($route.'.create', $routeParams) }}"><x-icon name="plus" class="me-1" /> {{ __('Add :name', ['name' => $singular]) }}</a>
     @endif

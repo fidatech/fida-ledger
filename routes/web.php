@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Assets;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Banking;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BillingController;
@@ -256,6 +257,32 @@ Route::middleware('auth:web')->group(function () {
                     Route::get('/departments/{id}/edit', [Payroll\DepartmentController::class, 'edit'])->whereNumber('id')->name('departments.edit');
                     Route::put('/departments/{id}', [Payroll\DepartmentController::class, 'update'])->whereNumber('id')->name('departments.update');
                     Route::delete('/departments/{id}', [Payroll\DepartmentController::class, 'destroy'])->whereNumber('id')->name('departments.destroy');
+                });
+            });
+
+            // Banking & Planning (Business version)
+            Route::middleware('business')->group(function () {
+                Route::middleware('can.do:banking.view')->group(function () {
+                    Route::get('/banking/reconciliation', [Banking\ReconciliationController::class, 'show'])->name('banking.reconciliation');
+                    Route::get('/banking/budget', [Banking\BudgetController::class, 'edit'])->name('banking.budget');
+                    Route::get('/banking/budget/comparison', [Banking\BudgetController::class, 'comparison'])->name('banking.budget.comparison');
+                    Route::get('/recurring/{direction}', [Banking\RecurringController::class, 'index'])->where('direction', 'in|out')->name('recurring.index');
+                });
+                Route::middleware('can.do:banking.manage')->group(function () {
+                    Route::post('/banking/reconciliation/import', [Banking\ReconciliationController::class, 'import'])->name('banking.import');
+                    Route::post('/banking/reconciliation/auto', [Banking\ReconciliationController::class, 'auto'])->name('banking.auto');
+                    Route::post('/banking/statement/{id}/match', [Banking\ReconciliationController::class, 'match'])->whereNumber('id')->name('banking.match');
+                    Route::post('/banking/statement/{id}/unmatch', [Banking\ReconciliationController::class, 'unmatch'])->whereNumber('id')->name('banking.unmatch');
+                    Route::delete('/banking/statement/{id}', [Banking\ReconciliationController::class, 'destroy'])->whereNumber('id')->name('banking.statement.destroy');
+                    Route::put('/banking/budget', [Banking\BudgetController::class, 'update'])->name('banking.budget.update');
+                    Route::post('/recurring/run', [Banking\RecurringController::class, 'run'])->name('recurring.run');
+                    Route::prefix('/recurring/{direction}')->where(['direction' => 'in|out'])->group(function () {
+                        Route::get('/create', [Banking\RecurringController::class, 'create'])->name('recurring.create');
+                        Route::post('/', [Banking\RecurringController::class, 'store'])->name('recurring.store');
+                        Route::get('/{id}/edit', [Banking\RecurringController::class, 'edit'])->whereNumber('id')->name('recurring.edit');
+                        Route::put('/{id}', [Banking\RecurringController::class, 'update'])->whereNumber('id')->name('recurring.update');
+                        Route::delete('/{id}', [Banking\RecurringController::class, 'destroy'])->whereNumber('id')->name('recurring.destroy');
+                    });
                 });
             });
 

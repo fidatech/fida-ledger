@@ -15,7 +15,7 @@ class PurchaseOrder extends Model
 
     protected function casts(): array
     {
-        return ['date' => 'date', 'expected_date' => 'date'];
+        return ['date' => \App\Casts\Day::class, 'expected_date' => \App\Casts\Day::class];
     }
 
     public function supplier(): BelongsTo

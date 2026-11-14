@@ -16,7 +16,7 @@ class SubscriptionPayment extends Model
 
     protected function casts(): array
     {
-        return ['reviewed_at' => 'datetime', 'period_start' => 'date', 'period_end' => 'date'];
+        return ['reviewed_at' => 'datetime', 'period_start' => \App\Casts\Day::class, 'period_end' => \App\Casts\Day::class];
     }
 
     public function company(): BelongsTo

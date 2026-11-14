@@ -16,7 +16,7 @@ class Employee extends Model
 
     protected function casts(): array
     {
-        return ['joined_on' => 'date', 'is_active' => 'boolean'];
+        return ['joined_on' => \App\Casts\Day::class, 'is_active' => 'boolean'];
     }
 
     public function department(): BelongsTo

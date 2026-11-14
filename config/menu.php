@@ -4,6 +4,7 @@
 | The sidebar of a company.
 |   'can'     the permission the user's role needs (config/ledger.php 'roles')
 |   'module'  the Business module that must be switched on (config/modules.php)
+|   'plan'    the version the entry belongs to ('business')
 |   'active'  the route pattern that opens the entry; 'params' tell apart entries that share a route
 | Only screens that exist are listed: a module's entries are added here together with the module.
 */
@@ -84,6 +85,13 @@ return [
     ]],
 
     ['heading' => 'Management'],
+    ['label' => 'Banking & Planning', 'icon' => 'building-columns', 'plan' => 'business', 'can' => 'banking.view', 'children' => [
+        ['label' => 'Bank Reconciliation', 'route' => 'banking.reconciliation'],
+        ['label' => 'Budgets', 'route' => 'banking.budget'],
+        ['label' => 'Budget Comparison', 'route' => 'banking.budget.comparison'],
+        ['label' => 'Recurring Money Out', 'route' => 'recurring.index', 'params' => ['direction' => 'out'], 'active' => 'recurring.*'],
+        ['label' => 'Recurring Money In', 'route' => 'recurring.index', 'params' => ['direction' => 'in'], 'active' => 'recurring.*'],
+    ]],
     ['label' => 'General Journal', 'icon' => 'book', 'route' => 'journals.index', 'active' => 'journals.*', 'can' => 'journals.view'],
     ['label' => 'Reports', 'icon' => 'chart-column', 'route' => 'reports.index', 'active' => 'reports.*', 'can' => 'reports.view'],
     ['label' => 'Settings', 'icon' => 'gear', 'children' => [

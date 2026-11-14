@@ -18,7 +18,7 @@ class JournalLine extends Model
 
     protected function casts(): array
     {
-        return ['date' => 'date'];
+        return ['date' => \App\Casts\Day::class];
     }
 
     protected static function booted(): void
