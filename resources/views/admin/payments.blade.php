@@ -24,7 +24,7 @@
                             <td>{{ $payment->plan?->name }} · {{ $payment->kind === 'first' ? __('First year') : __('Renewal') }}<span class="d-block small text-muted" dir="ltr">{{ __('Setup') }} {{ money($payment->setup_fee) }} + {{ __('Annual') }} {{ money($payment->annual_fee) }}</span></td>
                             <td class="text-end fw-semibold" dir="ltr">{{ money($payment->amount, $payment->currency) }}</td>
                             <td>{{ __(config('billing.methods.'.$payment->method, $payment->method)) }}<span class="d-block small text-muted" dir="ltr">{{ $payment->reference }}</span></td>
-                            <td>@if ($payment->receipt_path)<a class="btn btn-sm btn-light-secondary" href="{{ route('admin.payments.receipt', ['id' => $payment->id]) }}" target="_blank" rel="noopener"><x-icon name="eye" class="me-1" /> {{ __('Open') }}</a>@endif</td>
+                            <td>@if ($payment->receipt_path)<a class="btn btn-sm btn-light-secondary" href="{{ route('admin.payments.receipt', ['id' => $payment->id]) }}" target="_blank" rel="noopener"><x-icon name="eye" class="me-1" /> {{ __('Open') }}</a>@elseif ($payment->method === 'cash')<span class="small text-muted">{{ __('Cash: no receipt') }}</span>@endif</td>
                             <td class="text-end">
                                 @if ($payment->status === 'pending')
                                     <div class="d-flex flex-wrap gap-2 justify-content-end">

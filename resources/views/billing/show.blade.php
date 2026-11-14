@@ -63,14 +63,34 @@
                                 <label class="form-label" for="reference">{{ __('Transaction number') }}</label>
                                 <input type="text" class="form-control" id="reference" name="reference" value="{{ old('reference') }}" maxlength="100" dir="ltr">
                             </div>
-                            <div class="col-12">
+                            <div class="col-12" id="receiptBox">
                                 <label class="form-label" for="receipt">{{ __('Receipt (photo or PDF)') }} <span class="text-danger">*</span></label>
                                 <input type="file" class="form-control @error('receipt') is-invalid @enderror" id="receipt" name="receipt" accept=".jpg,.jpeg,.png,.webp,.pdf" required>
                                 @error('receipt')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                             </div>
+                            <div class="col-12" id="cashNote" hidden>
+                                <div class="form-text">{{ __('Cash needs no receipt. Hand the money to our office; your company opens when we confirm it.') }}</div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary mt-3"><x-icon name="paper-plane" class="me-1" /> {{ __('Send :amount for approval', ['amount' => money($quote['amount'], $quote['currency'])]) }}</button>
                     </form>
+                    @push('scripts')
+                    <script>
+                        // a cash payment has no receipt: the box is hidden and not required
+                        (function () {
+                            var method = document.getElementById('method'), box = document.getElementById('receiptBox'), file = document.getElementById('receipt'), note = document.getElementById('cashNote');
+                            function sync() {
+                                var cash = method.value === 'cash';
+                                box.hidden = cash;
+                                note.hidden = !cash;
+                                file.required = !cash;
+                                if (cash) file.value = '';
+                            }
+                            method.addEventListener('change', sync);
+                            sync();
+                        })();
+                    </script>
+                    @endpush
                 @elseif ($company->isUsable())
                     <p class="text-muted mb-0">{{ __('Nothing is due. You can renew from :days days before the end date.', ['days' => config('billing.renew_days')]) }}</p>
                 @else

@@ -36,11 +36,14 @@ class BillingController extends Controller
         $data = $request->validate([
             'method' => ['required', Rule::in(array_keys(config('billing.methods')))],
             'reference' => ['nullable', 'string', 'max:100'],
-            'receipt' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
+            // cash handed over in person has no receipt to upload; every other method needs one
+            'receipt' => [Rule::requiredIf($request->input('method') !== 'cash'), 'nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
         ]);
 
         // receipts are kept on the private disk and only served through receipt() below
-        $data['receipt_path'] = $request->file('receipt')->store('receipts/'.company_id(), 'local');
+        if ($request->hasFile('receipt')) {
+            $data['receipt_path'] = $request->file('receipt')->store('receipts/'.company_id(), 'local');
+        }
         Billing::submit(company(), $request->user(), $data);
 
         return redirect()->route('billing.show')->with('success', __('Thank you. Your payment is waiting for approval.'));

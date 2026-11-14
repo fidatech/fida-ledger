@@ -74,6 +74,18 @@ class RegistrationTest extends TestCase
         $this->get('/dashboard')->assertOk();
     }
 
+    public function test_cash_needs_no_receipt_but_every_other_method_does(): void
+    {
+        $company = $this->workIn($this->company());
+
+        $this->post('/billing/pay', ['method' => 'bank'])->assertSessionHasErrors('receipt');
+        $this->assertSame(0, $company->payments()->count());
+
+        $this->post('/billing/pay', ['method' => 'cash'])->assertRedirect(route('billing.show'));
+        $this->assertDatabaseHas('subscription_payments', ['company_id' => $company->id, 'method' => 'cash', 'receipt_path' => null, 'status' => 'pending']);
+        $this->assertFalse($company->fresh()->isUsable()); // still only an approval activates
+    }
+
     public function test_a_renewal_charges_the_annual_fee_only_and_extends_from_the_end_date(): void
     {
         $company = $this->activeCompany();
