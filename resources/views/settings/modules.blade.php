@@ -34,7 +34,6 @@
                     @endforeach
                 </div>
                 <p class="small text-muted mt-3">{{ __('Switching a module off hides its screens. Its records and journal entries are kept and come back when you switch it on again. There is no charge for switching modules of your version.') }}</p>
-                <div class="alert alert-info">{{ __('The screens of the Business modules are being built. Switching one on here reserves it for your company; its menu appears when the module is released.') }}</div>
                 <button type="submit" class="btn btn-primary"><x-icon name="check" class="me-1" /> {{ __('Save') }}</button>
             </form>
         @endif

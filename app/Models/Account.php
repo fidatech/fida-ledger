@@ -54,7 +54,24 @@ class Account extends Model
     /** A special account of a company by its system key ('opening_balances', 'exchange_difference' ...). */
     public static function system(int $companyId, string $key): self
     {
-        return self::withoutGlobalScope('company')->where('company_id', $companyId)->where('system_key', $key)->firstOrFail();
+        $account = self::withoutGlobalScope('company')->where('company_id', $companyId)->where('system_key', $key)->first();
+        if ($account) {
+            return $account;
+        }
+
+        // a company opened before this account was added to the chart gets it the first time it is needed
+        foreach (config('ledger.chart') as [$code, $name, $class, $parent, $kind, $systemKey]) {
+            if ($systemKey === $key) {
+                $account = new self(['code' => $code, 'name' => $name, 'class' => $class, 'kind' => $kind, 'system_key' => $key,
+                    'parent_id' => self::withoutGlobalScope('company')->where('company_id', $companyId)->where('code', $parent)->value('id')]);
+                $account->company_id = $companyId;
+                $account->save();
+
+                return $account;
+            }
+        }
+
+        throw new \LogicException('Unknown system account: '.$key);
     }
 
     public function isCash(): bool

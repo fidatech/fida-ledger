@@ -1,10 +1,10 @@
 # Fida Ledger: progress
 
-Last updated: 2026-11-15 (stage 2). Branch: `development`.
+Last updated: 2026-11-15 (stage 3). Branch: `development`.
 
 ## Read this first
 
-Stages 1 and 2 were written in a cloud workspace where Composer packages and MySQL could not be
+Stages 1 to 3 were written in a cloud workspace where Composer packages and MySQL could not be
 installed. **Nothing here has been run**: no `composer install`, no migration, no test, no
 browser. What was checked: every PHP file passes `php -l`; Blade directives are balanced; every
 icon used exists in the sprite; the asset build (`php tools/build-assets.php`) ran and its
@@ -52,25 +52,55 @@ output is committed. The first job on a machine with PHP 8.3+/bcmath, Composer a
 - Platform side: companies list with suspend / restore, plan and price editing.
 - Tests written (not run): `tests/Feature/{Invoice,Settings}Test`.
 
+## Built in stage 3 (unverified in the same way)
+
+All six remaining Business modules now have tables, services, screens, permissions, posting
+and a workflow test (`tests/Feature/BusinessModulesTest`, not run):
+
+- **Inventory**: warehouses, stock overview with average cost and value, low-stock filter,
+  movements, transfers, adjustments, physical counts, opening stock, CSV export, and a
+  reconciliation of stock value against the Inventory account. Moving weighted average; stock
+  cannot go negative.
+- **Purchasing**: purchase orders (draft → approved → completed), approval as its own
+  permission, partial goods receipts, partial supplier bills, purchase returns, "Pay supplier".
+  Receipt accrues to "Goods received not invoiced"; the bill clears it.
+- **Sales Management**: quotations, sales orders, partial deliveries (cost of goods sold),
+  invoicing of what was delivered through the shared invoicing service, customer returns with
+  automatic credit note.
+- **Point of Sale**: registers with their own cash drawer, cashier sessions, a selling screen
+  with search, barcode entry, cart, discounts, split payments and change, receipts, full
+  refunds, cash closing with shortage or surplus posted. A POS sale is an invoice + stock issue
+  + Money In made by the shared services.
+- **Fixed Assets**: categories, register, acquisition, straight-line monthly depreciation
+  (repeat-safe), schedule, maintenance and transfer log, disposal with gain or loss.
+- **Payroll**: departments, employees with salary structure, salary advances, monthly payroll
+  (one per month), editable draft, approval (accrual), payment, payslips.
+- Dashboard figures for the modules that are switched on.
+
 ## Not built yet
+
+Inside the Business modules:
+- Products: variants, price lists, barcode label printing, product images.
+- Purchasing: requisitions, landed costs, bills at a price different from the order, tax on purchases.
+- Inventory: bin locations, batch/lot tracking, a multi-line count sheet (counts are per product).
+- Sales: sales reports beyond the lists; delivery note print layout uses the order page.
+- POS: partial refunds, held carts, receipt printer formatting, offline mode, foreign-currency sales.
+- Fixed Assets: depreciation methods other than straight line; asset reports.
+- Payroll: positions and structures as separate records, tax tables, per-employee payment, payroll reports.
 
 Starter scope still missing:
 - Email verification, optional 2FA, a local mail viewer (password links go to the mail log locally).
-- Invoice templates (one layout exists), invoice-level discount, refunds linked to credit notes,
-  WhatsApp sharing.
+- Invoice templates (one layout exists), invoice-level discount, WhatsApp sharing.
 - Money In/Out categories; manual journal entries.
 - Monetary revaluation; FX difference on settling foreign receivables/payables; year-end closing.
-- Remaining reports: cash flow, cashbook/bankbook, aging, currency balances, exchange gain/loss,
-  tax, audit log viewer. PDF export (pages print through the browser; CSV covers Excel).
-- Settings still missing: custom roles, numbering sequences, branding, language, security, API access.
+- Reports: cash flow, cashbook/bankbook, aging, currency balances, exchange gain/loss, tax,
+  audit log viewer, and the operational reports (product sales, purchases, valuation by warehouse,
+  register reconciliation, depreciation, payroll). PDF export (pages print through the browser).
+- Settings: custom roles, numbering sequences, branding, language, security, API access.
 - Dari and Pashto translations (the layout is RTL-ready; strings are English only).
+- Bank reconciliation, statement import, budgets, recurring transactions.
 - WhatsApp / RelayWA integration. The provider's API was not consulted yet.
 - Sanctum API.
-
-Business modules: **one of seven is built** (Products & Services, without variants, price
-lists and barcode printing). Not built: Purchasing, Inventory, Sales Management, Point of
-Sale, Fixed Assets, Payroll. Their switches exist in Settings; their screens do not. Bank
-reconciliation, budgets and recurring transactions are not built either.
 
 Platform side still missing: users, module entitlement editing, promotions, announcements,
 settings, audit log viewer, jobs, health, revenue reports, administrators management.
@@ -80,10 +110,9 @@ API documentation, source ZIP.
 
 ## Suggested order for the next stages
 
-1. Run and fix stages 1 and 2 on MySQL. Browser pass on desktop and phone.
-2. Inventory (warehouses, movements, weighted average) → Purchasing → Sales → POS, each
-   posting through `Ledger::post()` with the policies in `docs/ARCHITECTURE.md` section 9.
-3. Fixed Assets and Payroll.
-4. The rest of Starter (reports, exports, verification, translations) and of the admin panel.
-5. Banking (reconciliation, imports), budgets, recurring transactions.
-6. RelayWA, Sanctum API, documentation, acceptance run.
+1. Run everything on MySQL (`docs/INSTALL-MAC.md`), fix what fails, then a browser pass on
+   desktop and phone. Nothing below should start before this.
+2. Reports and exports (financial and operational), manual journals, year-end closing, revaluation.
+3. Banking (reconciliation, imports), budgets, recurring transactions.
+4. The rest of the admin panel and of Settings; email verification, 2FA.
+5. Dari and Pashto translations; RelayWA; Sanctum API; documentation.

@@ -47,3 +47,5 @@ bg-success-subtle text-success-emphasis bg-warning-subtle text-warning-emphasis 
 alert-success alert-warning alert-danger alert-info alert-secondary
 # icons named in controllers (CrudController screens)
 #s-folder-tree #s-ruler #s-boxes-stacked #s-screwdriver-wrench
+# icons named in PHP (dashboard figures, CrudController screens)
+#s-cash-register #s-file-signature #s-cart-flatbed #s-warehouse #s-building #s-users-gear #s-triangle-exclamation #s-sitemap #s-id-badge

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Assets;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -9,10 +10,12 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\Catalog;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Inventory;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\MoneyController;
 use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\Payroll;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings;
 use App\Http\Controllers\TransferController;
@@ -20,6 +23,8 @@ use Illuminate\Support\Facades\Route;
 
 // {type} in /products/{type} is "product" or "service"
 Route::pattern('type', 'product|service');
+// {doc} in /sales/{doc} is "quotation" or "order"
+Route::pattern('doc', 'quotation|order');
 
 Route::redirect('/', '/dashboard');
 
@@ -122,6 +127,135 @@ Route::middleware('auth:web')->group(function () {
                         Route::delete($uri.'/{id}', [$controller, 'destroy'])->whereNumber('id')->name($name.'.destroy');
                     });
                 }
+            });
+
+            // Inventory (Business module)
+            Route::middleware('module:inventory')->group(function () {
+                Route::middleware('can.do:inventory.view')->group(function () {
+                    Route::get('/inventory', [Inventory\InventoryController::class, 'overview'])->name('inventory.overview');
+                    Route::get('/inventory/movements', [Inventory\InventoryController::class, 'movements'])->name('inventory.movements');
+                    Route::get('/warehouses', [Inventory\WarehouseController::class, 'index'])->name('warehouses.index');
+                });
+                Route::middleware('can.do:inventory.manage')->group(function () {
+                    Route::get('/inventory/change', [Inventory\InventoryController::class, 'change'])->name('inventory.change');
+                    Route::post('/inventory/change', [Inventory\InventoryController::class, 'store'])->name('inventory.store');
+                    Route::get('/warehouses/create', [Inventory\WarehouseController::class, 'create'])->name('warehouses.create');
+                    Route::post('/warehouses', [Inventory\WarehouseController::class, 'store'])->name('warehouses.store');
+                    Route::get('/warehouses/{id}/edit', [Inventory\WarehouseController::class, 'edit'])->whereNumber('id')->name('warehouses.edit');
+                    Route::put('/warehouses/{id}', [Inventory\WarehouseController::class, 'update'])->whereNumber('id')->name('warehouses.update');
+                    Route::delete('/warehouses/{id}', [Inventory\WarehouseController::class, 'destroy'])->whereNumber('id')->name('warehouses.destroy');
+                });
+            });
+
+            // Purchasing (Business module)
+            Route::middleware('module:purchasing')->group(function () {
+                Route::middleware('can.do:purchases.view')->group(function () {
+                    Route::get('/purchases', [Inventory\PurchaseController::class, 'index'])->name('purchases.index');
+                    Route::get('/purchases/{id}', [Inventory\PurchaseController::class, 'show'])->whereNumber('id')->name('purchases.show');
+                    // the controller checks purchases.approve for "approve" and purchases.manage for the other steps
+                    Route::post('/purchases/{id}/{step}', [Inventory\PurchaseController::class, 'act'])->whereNumber('id')->whereIn('step', ['approve', 'cancel', 'receive', 'bill', 'return'])->name('purchases.act');
+                });
+                Route::middleware('can.do:purchases.manage')->group(function () {
+                    Route::get('/purchases/create', [Inventory\PurchaseController::class, 'create'])->name('purchases.create');
+                    Route::post('/purchases', [Inventory\PurchaseController::class, 'store'])->name('purchases.store');
+                    Route::get('/purchases/{id}/edit', [Inventory\PurchaseController::class, 'edit'])->whereNumber('id')->name('purchases.edit');
+                    Route::put('/purchases/{id}', [Inventory\PurchaseController::class, 'update'])->whereNumber('id')->name('purchases.update');
+                });
+            });
+
+            // Sales Management (Business module)
+            Route::middleware('module:sales')->prefix('/sales/{doc}')->group(function () {
+                Route::middleware('can.do:sales.view')->group(function () {
+                    Route::get('/', [Inventory\SalesController::class, 'index'])->name('sales.index');
+                    Route::get('/{id}', [Inventory\SalesController::class, 'show'])->whereNumber('id')->name('sales.show');
+                });
+                Route::middleware('can.do:sales.manage')->group(function () {
+                    Route::get('/create', [Inventory\SalesController::class, 'create'])->name('sales.create');
+                    Route::post('/', [Inventory\SalesController::class, 'store'])->name('sales.store');
+                    Route::get('/{id}/edit', [Inventory\SalesController::class, 'edit'])->whereNumber('id')->name('sales.edit');
+                    Route::put('/{id}', [Inventory\SalesController::class, 'update'])->whereNumber('id')->name('sales.update');
+                    Route::post('/{id}/{step}', [Inventory\SalesController::class, 'act'])->whereNumber('id')->whereIn('step', ['confirm', 'cancel', 'deliver', 'invoice', 'return'])->name('sales.act');
+                });
+            });
+
+            // Point of Sale (Business module)
+            Route::middleware('module:pos')->prefix('/pos')->group(function () {
+                Route::middleware('can.do:pos.use')->group(function () {
+                    Route::get('/', [Inventory\PosController::class, 'index'])->name('pos.index');
+                    Route::post('/registers/{id}/open', [Inventory\PosController::class, 'open'])->whereNumber('id')->name('pos.open');
+                    Route::get('/sessions', [Inventory\PosController::class, 'sessions'])->name('pos.sessions');
+                    Route::get('/sessions/{id}', [Inventory\PosController::class, 'session'])->whereNumber('id')->name('pos.session');
+                    Route::get('/sessions/{id}/sell', [Inventory\PosController::class, 'sell'])->whereNumber('id')->name('pos.sell');
+                    Route::post('/sessions/{id}/sell', [Inventory\PosController::class, 'store'])->whereNumber('id')->name('pos.store');
+                    Route::get('/sales', [Inventory\PosController::class, 'sales'])->name('pos.sales');
+                    Route::get('/sales/{id}', [Inventory\PosController::class, 'sale'])->whereNumber('id')->name('pos.sale');
+                });
+                Route::middleware('can.do:pos.close')->group(function () {
+                    Route::post('/sessions/{id}/close', [Inventory\PosController::class, 'close'])->whereNumber('id')->name('pos.close');
+                    Route::post('/sales/{id}/refund', [Inventory\PosController::class, 'refund'])->whereNumber('id')->name('pos.refund');
+                });
+                Route::middleware('can.do:settings.manage')->group(function () {
+                    Route::get('/registers', [Inventory\RegisterController::class, 'index'])->name('pos.registers.index');
+                    Route::get('/registers/create', [Inventory\RegisterController::class, 'create'])->name('pos.registers.create');
+                    Route::post('/registers', [Inventory\RegisterController::class, 'store'])->name('pos.registers.store');
+                    Route::get('/registers/{id}/edit', [Inventory\RegisterController::class, 'edit'])->whereNumber('id')->name('pos.registers.edit');
+                    Route::put('/registers/{id}', [Inventory\RegisterController::class, 'update'])->whereNumber('id')->name('pos.registers.update');
+                    Route::delete('/registers/{id}', [Inventory\RegisterController::class, 'destroy'])->whereNumber('id')->name('pos.registers.destroy');
+                });
+            });
+
+            // Fixed Assets (Business module)
+            Route::middleware('module:fixed_assets')->group(function () {
+                Route::middleware('can.do:assets.view')->group(function () {
+                    Route::get('/assets', [Assets\AssetController::class, 'index'])->name('assets.index');
+                    Route::get('/assets/{id}', [Assets\AssetController::class, 'show'])->whereNumber('id')->name('assets.show');
+                });
+                Route::middleware('can.do:assets.manage')->group(function () {
+                    Route::get('/assets/create', [Assets\AssetController::class, 'create'])->name('assets.create');
+                    Route::post('/assets', [Assets\AssetController::class, 'store'])->name('assets.store');
+                    Route::post('/assets/depreciate', [Assets\AssetController::class, 'depreciate'])->name('assets.depreciate');
+                    Route::post('/assets/{id}/dispose', [Assets\AssetController::class, 'dispose'])->whereNumber('id')->name('assets.dispose');
+                    Route::post('/assets/{id}/event', [Assets\AssetController::class, 'event'])->whereNumber('id')->name('assets.event');
+                });
+                Route::get('/asset-categories', [Assets\CategoryController::class, 'index'])->middleware('can.do:assets.view')->name('asset-categories.index');
+                Route::middleware('can.do:assets.manage')->group(function () {
+                    Route::get('/asset-categories/create', [Assets\CategoryController::class, 'create'])->name('asset-categories.create');
+                    Route::post('/asset-categories', [Assets\CategoryController::class, 'store'])->name('asset-categories.store');
+                    Route::get('/asset-categories/{id}/edit', [Assets\CategoryController::class, 'edit'])->whereNumber('id')->name('asset-categories.edit');
+                    Route::put('/asset-categories/{id}', [Assets\CategoryController::class, 'update'])->whereNumber('id')->name('asset-categories.update');
+                    Route::delete('/asset-categories/{id}', [Assets\CategoryController::class, 'destroy'])->whereNumber('id')->name('asset-categories.destroy');
+                });
+            });
+
+            // Payroll (Business module): every screen needs a payroll permission, salaries are private
+            Route::middleware('module:payroll')->group(function () {
+                Route::middleware('can.do:payroll.view')->group(function () {
+                    Route::get('/payroll', [Payroll\PayrollController::class, 'index'])->name('payroll.index');
+                    Route::get('/payroll/{id}', [Payroll\PayrollController::class, 'show'])->whereNumber('id')->name('payroll.show');
+                    Route::get('/payroll/payslips/{id}', [Payroll\PayrollController::class, 'payslip'])->whereNumber('id')->name('payroll.payslip');
+                    Route::get('/payroll/advances', [Payroll\PayrollController::class, 'advances'])->name('payroll.advances');
+                });
+                Route::middleware('can.do:payroll.manage')->group(function () {
+                    Route::post('/payroll', [Payroll\PayrollController::class, 'prepare'])->name('payroll.prepare');
+                    Route::post('/payroll/advances', [Payroll\PayrollController::class, 'advance'])->name('payroll.advance');
+                    Route::post('/payroll/{id}/{step}', [Payroll\PayrollController::class, 'act'])->whereNumber('id')->whereIn('step', ['save', 'approve', 'pay', 'discard'])->name('payroll.act');
+                });
+                Route::get('/employees', [Payroll\EmployeeController::class, 'index'])->middleware('can.do:payroll.view')->name('employees.index');
+                Route::middleware('can.do:payroll.manage')->group(function () {
+                    Route::get('/employees/create', [Payroll\EmployeeController::class, 'create'])->name('employees.create');
+                    Route::post('/employees', [Payroll\EmployeeController::class, 'store'])->name('employees.store');
+                    Route::get('/employees/{id}/edit', [Payroll\EmployeeController::class, 'edit'])->whereNumber('id')->name('employees.edit');
+                    Route::put('/employees/{id}', [Payroll\EmployeeController::class, 'update'])->whereNumber('id')->name('employees.update');
+                    Route::delete('/employees/{id}', [Payroll\EmployeeController::class, 'destroy'])->whereNumber('id')->name('employees.destroy');
+                });
+                Route::get('/departments', [Payroll\DepartmentController::class, 'index'])->middleware('can.do:payroll.view')->name('departments.index');
+                Route::middleware('can.do:payroll.manage')->group(function () {
+                    Route::get('/departments/create', [Payroll\DepartmentController::class, 'create'])->name('departments.create');
+                    Route::post('/departments', [Payroll\DepartmentController::class, 'store'])->name('departments.store');
+                    Route::get('/departments/{id}/edit', [Payroll\DepartmentController::class, 'edit'])->whereNumber('id')->name('departments.edit');
+                    Route::put('/departments/{id}', [Payroll\DepartmentController::class, 'update'])->whereNumber('id')->name('departments.update');
+                    Route::delete('/departments/{id}', [Payroll\DepartmentController::class, 'destroy'])->whereNumber('id')->name('departments.destroy');
+                });
             });
 
             // General journal

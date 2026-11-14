@@ -43,6 +43,21 @@
     @endforeach
 </div>
 
+@if ($business)
+    <div class="row g-3 mb-3">
+        @foreach ($business as [$label, $icon, $tone, $figure, $url])
+            <div class="col-6 col-md-4 col-xl-3">
+                <a href="{{ $url }}" class="card card-hover h-100 mb-0 text-decoration-none text-reset">
+                    <div class="card-body d-flex align-items-center gap-2">
+                        <span class="sc-icon icon-soft {{ $tone }} flex-shrink-0" style="width:38px;height:38px"><x-icon :name="$icon" /></span>
+                        <span class="min-w-0"><span class="d-block small fw-semibold text-muted text-truncate">{{ $label }}</span><span class="d-block fw-bold" dir="ltr">{{ $figure }}</span></span>
+                    </div>
+                </a>
+            </div>
+        @endforeach
+    </div>
+@endif
+
 <div class="row g-3">
     <div class="col-12 col-xl-5">
         <div class="card h-100 mb-0">

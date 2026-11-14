@@ -49,6 +49,39 @@ return [
         ['label' => 'Categories', 'route' => 'product-categories.index', 'active' => 'product-categories.*'],
         ['label' => 'Units', 'route' => 'units.index', 'active' => 'units.*'],
     ]],
+    ['label' => 'Purchasing', 'icon' => 'cart-flatbed', 'module' => 'purchasing', 'can' => 'purchases.view', 'children' => [
+        ['label' => 'Purchase Orders', 'route' => 'purchases.index', 'active' => 'purchases.*'],
+        ['label' => 'New Purchase Order', 'route' => 'purchases.create', 'can' => 'purchases.manage'],
+    ]],
+    ['label' => 'Inventory', 'icon' => 'warehouse', 'module' => 'inventory', 'can' => 'inventory.view', 'children' => [
+        ['label' => 'Stock Overview', 'route' => 'inventory.overview'],
+        ['label' => 'Stock Movements', 'route' => 'inventory.movements'],
+        ['label' => 'Stock Transfers', 'route' => 'inventory.change', 'params' => ['mode' => 'transfer'], 'can' => 'inventory.manage'],
+        ['label' => 'Stock Adjustments', 'route' => 'inventory.change', 'params' => ['mode' => 'adjust'], 'can' => 'inventory.manage'],
+        ['label' => 'Physical Stock Counts', 'route' => 'inventory.change', 'params' => ['mode' => 'count'], 'can' => 'inventory.manage'],
+        ['label' => 'Warehouses', 'route' => 'warehouses.index', 'active' => 'warehouses.*'],
+    ]],
+    ['label' => 'Sales Management', 'icon' => 'file-signature', 'module' => 'sales', 'can' => 'sales.view', 'children' => [
+        ['label' => 'Quotations', 'route' => 'sales.index', 'params' => ['doc' => 'quotation'], 'active' => 'sales.*'],
+        ['label' => 'Sales Orders', 'route' => 'sales.index', 'params' => ['doc' => 'order'], 'active' => 'sales.*'],
+    ]],
+    ['label' => 'Point of Sale', 'icon' => 'cash-register', 'module' => 'pos', 'can' => 'pos.use', 'children' => [
+        ['label' => 'Open POS', 'route' => 'pos.index'],
+        ['label' => 'Cashier Sessions', 'route' => 'pos.sessions', 'active' => 'pos.session*'],
+        ['label' => 'POS Sales', 'route' => 'pos.sales', 'active' => 'pos.sale*'],
+        ['label' => 'POS Returns', 'route' => 'pos.sales', 'params' => ['status' => 'refunded'], 'active' => 'pos.sale*'],
+        ['label' => 'Registers', 'route' => 'pos.registers.index', 'active' => 'pos.registers.*', 'can' => 'settings.manage'],
+    ]],
+    ['label' => 'Fixed Assets', 'icon' => 'building', 'module' => 'fixed_assets', 'can' => 'assets.view', 'children' => [
+        ['label' => 'Asset Register', 'route' => 'assets.index', 'active' => 'assets.*'],
+        ['label' => 'Asset Categories', 'route' => 'asset-categories.index', 'active' => 'asset-categories.*'],
+    ]],
+    ['label' => 'Payroll', 'icon' => 'users-gear', 'module' => 'payroll', 'can' => 'payroll.view', 'children' => [
+        ['label' => 'Employees', 'route' => 'employees.index', 'active' => 'employees.*'],
+        ['label' => 'Departments', 'route' => 'departments.index', 'active' => 'departments.*'],
+        ['label' => 'Payroll Runs', 'route' => 'payroll.index', 'active' => 'payroll.show'],
+        ['label' => 'Salary Advances', 'route' => 'payroll.advances'],
+    ]],
 
     ['heading' => 'Management'],
     ['label' => 'General Journal', 'icon' => 'book', 'route' => 'journals.index', 'active' => 'journals.*', 'can' => 'journals.view'],
