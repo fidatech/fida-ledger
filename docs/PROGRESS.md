@@ -1,6 +1,6 @@
 # Fida Ledger: progress
 
-Last updated: 2026-11-15 (stage 5). Branch: `development`.
+Last updated: 2026-11-15 (stage 6). Branch: `development`.
 
 ## Read this first
 
@@ -101,6 +101,18 @@ Banking & Planning, for the Business version (hidden and refused for Starter):
 - Date-only columns now use the `Day` cast, so dates compare the same on MySQL and on SQLite.
 - Tests written: `tests/Feature/BankingTest`.
 
+## Built in stage 6 (written without being run, except the one-time-code maths)
+
+- Two-factor sign-in (authenticator app, RFC 6238) with one-time recovery codes; the code
+  generator was checked against the published test vectors.
+- My Profile & Security: name, password change, two-factor setup and switch-off.
+- Email verification, off by default (`EMAIL_VERIFICATION=true` switches it on).
+- Platform side: company page (change version, correct the subscription date, with a required
+  reason), users (block / restore), administrators and their roles, audit log, revenue by month
+  and by version, module entitlements applied to all companies, announcements on the company
+  dashboard, system health.
+- Tests written: `tests/Feature/SecurityAdminTest`.
+
 ## Not built yet
 
 Inside the Business modules:
@@ -113,7 +125,7 @@ Inside the Business modules:
 - Payroll: positions and structures as separate records, tax tables, per-employee payment, payroll reports.
 
 Starter scope still missing:
-- Email verification, optional 2FA, a local mail viewer (password links go to the mail log locally).
+- A local mail viewer (emails go to the mail log locally); a QR code for two-factor setup (the key is typed in).
 - Invoice templates (one layout exists), invoice-level discount, WhatsApp sharing.
 - Money In/Out categories.
 - Monetary revaluation; FX difference on settling foreign receivables/payables.
@@ -125,8 +137,8 @@ Starter scope still missing:
 - WhatsApp / RelayWA integration. The provider's API was not consulted yet.
 - Sanctum API.
 
-Platform side still missing: users, module entitlement editing, promotions, announcements,
-settings, audit log viewer, jobs, health, revenue reports, administrators management.
+Platform side still missing: promotions, a platform settings page, a background-jobs viewer,
+support access to a company's books (administrators cannot see them at all, by design).
 
 Deliverables not produced: user and super-admin documentation, deployment instructions,
 API documentation, source ZIP.
@@ -135,5 +147,4 @@ API documentation, source ZIP.
 
 1. Run everything on MySQL (`docs/INSTALL-MAC.md`), fix what fails, then a browser pass on
    desktop and phone. Nothing below should start before this.
-2. The rest of the admin panel and of Settings; email verification, 2FA.
-3. Dari and Pashto translations; RelayWA; Sanctum API; documentation.
+2. Dari and Pashto translations; RelayWA; Sanctum API; documentation.

@@ -53,3 +53,5 @@ alert-success alert-warning alert-danger alert-info alert-secondary
 #s-money-bill-transfer #s-hourglass-half #s-coins #s-percent #s-clock-rotate-left #s-chart-column
 d-print-block
 #s-arrows-rotate #s-building-columns
+#s-bullhorn #s-puzzle-piece #s-users #s-chart-line #s-user-shield #s-heart-pulse #s-layer-group
+user-select-all

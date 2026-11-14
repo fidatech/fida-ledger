@@ -2,22 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 /** A person who signs in. One user can belong to several companies, with a role in each. */
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
 
     protected $guarded = [];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'];
 
     protected function casts(): array
     {
-        return ['password' => 'hashed', 'is_active' => 'boolean', 'email_verified_at' => 'datetime'];
+        return ['password' => 'hashed', 'is_active' => 'boolean', 'email_verified_at' => 'datetime', 'two_factor_secret' => 'encrypted', 'two_factor_recovery_codes' => 'array', 'two_factor_confirmed_at' => 'datetime'];
     }
 
     /** The companies the user may open (an active membership). */
@@ -48,6 +50,35 @@ class User extends Authenticatable
         $can = config('ledger.roles.'.$role.'.can', []);
 
         return in_array('*', $can, true) || in_array($permission, $can, true);
+    }
+
+    /** Two-factor sign-in is on once the user proved, with a first code, that the authenticator app works. */
+    public function hasTwoFactor(): bool
+    {
+        return $this->two_factor_confirmed_at !== null && $this->two_factor_secret !== null;
+    }
+
+    /** Use up a recovery code. Each one works once. */
+    public function useRecoveryCode(string $code): bool
+    {
+        $code = strtoupper(trim($code));
+        foreach ($this->two_factor_recovery_codes ?? [] as $index => $hash) {
+            if (Hash::check($code, $hash)) {
+                $left = $this->two_factor_recovery_codes;
+                unset($left[$index]);
+                $this->forceFill(['two_factor_recovery_codes' => array_values($left)])->save();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** Email verification is asked for only where it is switched on (config/billing.php 'verify_email'). */
+    public function needsVerification(): bool
+    {
+        return config('billing.verify_email') && ! $this->hasVerifiedEmail();
     }
 
     public function initials(): string

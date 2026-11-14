@@ -36,6 +36,13 @@ class RegisterController extends Controller
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
 
+        // where verification is on, the link goes out now and the user confirms before setting up a company
+        if ($user->needsVerification()) {
+            $user->sendEmailVerificationNotification();
+
+            return redirect()->route('verification.notice');
+        }
+
         return redirect()->route('onboarding.create');
     }
 }

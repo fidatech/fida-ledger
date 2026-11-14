@@ -3,6 +3,7 @@
 use App\Exceptions\UserError;
 use App\Http\Middleware\BusinessPlan;
 use App\Http\Middleware\CanDo;
+use App\Http\Middleware\EnsureEmailVerified;
 use App\Http\Middleware\EnsureSubscribed;
 use App\Http\Middleware\RequireModule;
 use App\Http\Middleware\SetCompany;
@@ -30,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'module' => RequireModule::class,
             'can.do' => CanDo::class,
             'business' => BusinessPlan::class,
+            'email.verified' => EnsureEmailVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

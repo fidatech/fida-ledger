@@ -6,6 +6,9 @@
 */
 return [
     'registration' => (bool) env('REGISTRATION_OPEN', true),
+    // true: a new user must open the link sent to his email before he can set up a company.
+    // Off by default so local development needs no mail server; switch it on in production (.env EMAIL_VERIFICATION=true).
+    'verify_email' => (bool) env('EMAIL_VERIFICATION', false),
     'currency' => 'USD',
     'instructions' => env('BILLING_INSTRUCTIONS', 'Pay to our account, then send the receipt here.'),
     'email' => env('BILLING_EMAIL'),

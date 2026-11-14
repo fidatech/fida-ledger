@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Banking;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\TwoFactorController;
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\Catalog;
 use App\Http\Controllers\CompanyController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\MoneyController;
 use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Payroll;
 use App\Http\Controllers\ReportBookController;
 use App\Http\Controllers\ReportController;
@@ -41,19 +44,35 @@ Route::middleware('guest:web')->group(function () {
     Route::post('/forgot-password', [PasswordController::class, 'email'])->middleware('throttle:6,10')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordController::class, 'reset'])->name('password.reset');
     Route::post('/reset-password', [PasswordController::class, 'store'])->name('password.store');
+    // the second step of sign-in for a user with two-factor on
+    Route::get('/two-factor', [TwoFactorController::class, 'show'])->name('two-factor.challenge');
+    Route::post('/two-factor', [TwoFactorController::class, 'store'])->middleware('throttle:10,1')->name('two-factor.verify');
 });
 
 Route::middleware('auth:web')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
+    // email verification (only asked for where EMAIL_VERIFICATION is on)
+    Route::get('/email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('/email/verify', [VerificationController::class, 'send'])->middleware('throttle:3,10')->name('verification.send');
+
     // opening a company (after registration, or "Add a company" in the switcher)
-    Route::get('/start', [OnboardingController::class, 'create'])->name('onboarding.create');
-    Route::post('/start', [OnboardingController::class, 'store'])->name('onboarding.store');
+    Route::get('/start', [OnboardingController::class, 'create'])->middleware('email.verified')->name('onboarding.create');
+    Route::post('/start', [OnboardingController::class, 'store'])->middleware('email.verified')->name('onboarding.store');
 
     /* -------------------------------------------------------------- inside a company */
 
-    Route::middleware('company')->group(function () {
+    Route::middleware(['email.verified', 'company'])->group(function () {
         Route::post('/company/switch', [CompanyController::class, 'switch'])->name('company.switch');
+
+        // my profile and security: the person's own, whatever the state of the company
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [ProfileController::class, 'password'])->middleware('throttle:10,1')->name('profile.password');
+        Route::post('/profile/two-factor', [ProfileController::class, 'twoFactorStart'])->name('profile.two-factor.start');
+        Route::post('/profile/two-factor/confirm', [ProfileController::class, 'twoFactorConfirm'])->middleware('throttle:10,1')->name('profile.two-factor.confirm');
+        Route::delete('/profile/two-factor', [ProfileController::class, 'twoFactorDisable'])->name('profile.two-factor.disable');
 
         // reachable without an active subscription: this is where a pending or expired company lands
         Route::get('/billing', [BillingController::class, 'show'])->name('billing.show');
@@ -341,6 +360,25 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/payments/{id}/reject', [Admin\PaymentController::class, 'reject'])->whereNumber('id')->name('payments.reject');
         Route::get('/payments/{id}/receipt', [Admin\PaymentController::class, 'receipt'])->whereNumber('id')->name('payments.receipt');
         Route::get('/companies', [Admin\CompanyController::class, 'index'])->name('companies.index');
+        Route::get('/companies/{id}', [Admin\CompanyController::class, 'show'])->whereNumber('id')->name('companies.show');
+        Route::put('/companies/{id}', [Admin\CompanyController::class, 'update'])->whereNumber('id')->name('companies.update');
+        Route::get('/users', [Admin\PlatformController::class, 'users'])->name('users.index');
+        Route::post('/users/{id}/toggle', [Admin\PlatformController::class, 'toggleUser'])->whereNumber('id')->name('users.toggle');
+        Route::get('/administrators', [Admin\PlatformController::class, 'admins'])->name('admins.index');
+        Route::post('/administrators', [Admin\PlatformController::class, 'storeAdmin'])->name('admins.store');
+        Route::put('/administrators/{id}', [Admin\PlatformController::class, 'updateAdmin'])->whereNumber('id')->name('admins.update');
+        Route::get('/audit', [Admin\PlatformController::class, 'audit'])->name('audit');
+        Route::get('/revenue', [Admin\PlatformController::class, 'revenue'])->name('revenue');
+        Route::get('/modules', [Admin\PlatformController::class, 'modules'])->name('modules');
+        Route::put('/modules', [Admin\PlatformController::class, 'updateModules'])->name('modules.update');
+        Route::get('/health', [Admin\PlatformController::class, 'health'])->name('health');
+        // announcements: every administrator reads them, managers and super administrators write them
+        Route::get('/announcements', [Admin\AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('/announcements/create', [Admin\AnnouncementController::class, 'create'])->name('announcements.create');
+        Route::post('/announcements', [Admin\AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::get('/announcements/{id}/edit', [Admin\AnnouncementController::class, 'edit'])->whereNumber('id')->name('announcements.edit');
+        Route::put('/announcements/{id}', [Admin\AnnouncementController::class, 'update'])->whereNumber('id')->name('announcements.update');
+        Route::delete('/announcements/{id}', [Admin\AnnouncementController::class, 'destroy'])->whereNumber('id')->name('announcements.destroy');
         Route::post('/companies/{id}/suspend', [Admin\CompanyController::class, 'suspend'])->whereNumber('id')->name('companies.suspend');
         Route::get('/plans', [Admin\PlanController::class, 'index'])->name('plans.index');
         Route::put('/plans/{id}', [Admin\PlanController::class, 'update'])->whereNumber('id')->name('plans.update');

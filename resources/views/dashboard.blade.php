@@ -22,6 +22,10 @@
     </div>
 </x-page-header>
 
+@foreach ($announcements as $announcement)
+    <div class="alert alert-{{ $announcement->tone }}"><strong class="d-block">{{ $announcement->title }}</strong>@if ($announcement->body)<span style="white-space:pre-line">{{ $announcement->body }}</span>@endif</div>
+@endforeach
+
 <div class="row g-3 mb-3">
     @foreach ($cards as [$label, $icon, $tone, $main, $detail, $url])
         <div class="col-6 col-xl-4">

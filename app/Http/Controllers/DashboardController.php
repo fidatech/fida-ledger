@@ -70,6 +70,7 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'business' => $business,
+            'announcements' => \App\Models\Announcement::current(),
             'company' => $company,
             'period' => $period,
             'cashAccounts' => $cashAccounts,

@@ -6,6 +6,10 @@ use App\Exceptions\UserError;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Company;
+use App\Models\Plan;
+use App\Support\Modules;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -53,5 +57,46 @@ class CompanyController extends Controller
         AuditLog::record('suspended company', $company->name, [], $company->id);
 
         return back()->with('success', __(':name suspended.', ['name' => $company->name]));
+    }
+
+    /** One company: its plan, subscription, users and payments. Never its books. */
+    public function show(Request $request): View
+    {
+        $company = Company::with('plan')->findOrFail($request->route('id'));
+
+        return view('admin.company', [
+            'company' => $company,
+            'plans' => Plan::orderBy('sort')->get(),
+            'members' => $company->users()->orderBy('users.name')->get(),
+            'payments' => $company->payments()->with('plan')->latest('id')->limit(20)->get(),
+            'modules' => array_intersect_key(Modules::all(), array_flip(Modules::activeKeys($company))),
+            'logs' => AuditLog::where('company_id', $company->id)->whereNotNull('admin_id')->latest('id')->limit(15)->get(),
+        ]);
+    }
+
+    /**
+     * Change a company's version or the day its subscription ends. A change of version switches
+     * the company's modules to what the new version includes; switching modules off deletes nothing.
+     * No money is charged here: an upgrade's price is agreed and collected outside this action.
+     */
+    public function update(Request $request): RedirectResponse
+    {
+        abort_unless($request->user('admin')->isSuper(), 403);
+        $company = Company::with('plan')->findOrFail($request->route('id'));
+        $data = $request->validate([
+            'plan_id' => ['required', Rule::exists('plans', 'id')],
+            'subscription_ends_at' => ['nullable', 'date'],
+            'note' => ['required', 'string', 'max:255'], // why: it goes into the audit log
+        ]);
+
+        DB::transaction(function () use ($company, $data) {
+            $before = ['plan' => $company->plan?->code, 'ends' => $company->subscription_ends_at?->toDateString()];
+            $company->update(['plan_id' => $data['plan_id'], 'subscription_ends_at' => $data['subscription_ends_at'] ?? $company->subscription_ends_at]);
+            $company->load('plan');
+            Modules::set($company, Modules::entitled($company));
+            AuditLog::record('changed company subscription', $company->name, ['before' => $before, 'after' => ['plan' => $company->plan->code, 'ends' => $company->subscription_ends_at?->toDateString()], 'note' => $data['note']], $company->id);
+        });
+
+        return back()->with('success', __(':name saved.', ['name' => $company->name]));
     }
 }

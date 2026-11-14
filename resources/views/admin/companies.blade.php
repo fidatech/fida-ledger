@@ -26,7 +26,7 @@
                 <tbody>
                     @foreach ($companies as $company)
                         <tr>
-                            <td><span class="fw-semibold">{{ $company->name }}</span><span class="d-block small text-muted" dir="ltr">{{ $company->email }} {{ $company->phone }}</span></td>
+                            <td><a class="text-decoration-none fw-semibold" href="{{ route('admin.companies.show', ['id' => $company->id]) }}">{{ $company->name }}</a><span class="d-block small text-muted" dir="ltr">{{ $company->email }} {{ $company->phone }}</span></td>
                             <td>{{ $company->plan?->name }}</td>
                             <td>{{ $company->users_count }}</td>
                             <td>

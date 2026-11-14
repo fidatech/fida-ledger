@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -37,13 +39,22 @@ class LoginController extends Controller
             ]);
         }
 
-        if (! Auth::guard('web')->attempt($credentials + ['is_active' => true], $request->boolean('remember'))) {
+        $user = User::where('email', $credentials['email'])->where('is_active', true)->first();
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             RateLimiter::hit($key);
 
             throw ValidationException::withMessages(['email' => __('The email or the password is not right.')]);
         }
-
         RateLimiter::clear($key);
+
+        // two-factor: the password alone signs nobody in. The user is remembered for ten minutes while he types his code.
+        if ($user->hasTwoFactor()) {
+            $request->session()->put('two_factor', ['id' => $user->id, 'remember' => $request->boolean('remember'), 'until' => now()->addMinutes(10)->timestamp]);
+
+            return redirect()->route('two-factor.challenge');
+        }
+
+        Auth::guard('web')->login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
         // straight to the dashboard of the company worked in last: there is no "choose a company" page.

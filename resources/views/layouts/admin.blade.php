@@ -6,6 +6,13 @@
         ['Payment approvals', 'receipt', 'admin.payments.index', 'admin.payments.*', false],
         ['Companies', 'building', 'admin.companies.index', 'admin.companies.*', false],
         ['Subscription Plans', 'layer-group', 'admin.plans.index', 'admin.plans.*', false],
+        ['Module Entitlements', 'puzzle-piece', 'admin.modules', 'admin.modules*', false],
+        ['Users', 'users', 'admin.users.index', 'admin.users.*', false],
+        ['Announcements', 'bullhorn', 'admin.announcements.index', 'admin.announcements.*', false],
+        ['Revenue Reports', 'chart-line', 'admin.revenue', 'admin.revenue', false],
+        ['Audit Logs', 'clock-rotate-left', 'admin.audit', 'admin.audit', false],
+        ['Administrators', 'user-shield', 'admin.admins.index', 'admin.admins.*', false],
+        ['System Health', 'heart-pulse', 'admin.health', 'admin.health', false],
     ];
 @endphp
 <!DOCTYPE html>
