@@ -2,6 +2,12 @@
 
 @section('content')
 <x-page-header :title="__('Journal entry').' #'.$entry->number" icon="book" :subtitle="fmt_date($entry->date).($entry->reference ? ' · '.$entry->reference : '').($entry->creator ? ' · '.$entry->creator->name : '')" :crumbs="[[__('General Journal'), route('journals.index')], ['#'.$entry->number]]">
+    @if ($entry->source_type === null && ! $entry->isReversed() && ! $entry->reversal_of_id && can_do('journals.create'))
+        <form method="POST" action="{{ route('journals.reverse', ['id' => $entry->id]) }}" class="d-inline" data-confirm="{{ __('Reverse this entry?') }}" data-confirm-text="{{ __('A mirror entry is posted today. Both stay in the journal.') }}" data-confirm-ok="{{ __('Reverse') }}">
+            @csrf
+            <button type="submit" class="btn btn-danger"><x-icon name="rotate-left" class="me-1" /> {{ __('Reverse') }}</button>
+        </form>
+    @endif
     <button type="button" class="btn btn-outline-soft" onclick="window.print()"><x-icon name="print" class="me-1" /> {{ __('Print') }}</button>
 </x-page-header>
 

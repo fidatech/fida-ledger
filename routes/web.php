@@ -16,6 +16,7 @@ use App\Http\Controllers\JournalController;
 use App\Http\Controllers\MoneyController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\Payroll;
+use App\Http\Controllers\ReportBookController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings;
 use App\Http\Controllers\TransferController;
@@ -263,6 +264,11 @@ Route::middleware('auth:web')->group(function () {
                 Route::get('/journal', [JournalController::class, 'index'])->name('journals.index');
                 Route::get('/journal/{id}', [JournalController::class, 'show'])->whereNumber('id')->name('journals.show');
             });
+            Route::middleware('can.do:journals.create')->group(function () {
+                Route::get('/journal/create', [JournalController::class, 'create'])->name('journals.create');
+                Route::post('/journal', [JournalController::class, 'store'])->name('journals.store');
+                Route::post('/journal/{id}/reverse', [JournalController::class, 'reverse'])->whereNumber('id')->name('journals.reverse');
+            });
 
             // Reports
             Route::middleware('can.do:reports.view')->group(function () {
@@ -270,6 +276,7 @@ Route::middleware('auth:web')->group(function () {
                 Route::get('/reports/trial-balance', [ReportController::class, 'trialBalance'])->name('reports.trial-balance');
                 Route::get('/reports/profit-loss', [ReportController::class, 'profitLoss'])->name('reports.profit-loss');
                 Route::get('/reports/balance-sheet', [ReportController::class, 'balanceSheet'])->name('reports.balance-sheet');
+                Route::get('/reports/{report}', ReportBookController::class)->whereIn('report', array_keys(ReportBookController::REPORTS))->name('reports.show');
             });
 
             // Settings
@@ -279,6 +286,7 @@ Route::middleware('auth:web')->group(function () {
                 Route::post('/settings/rates', [Settings\RateController::class, 'store'])->name('settings.rates.store');
                 Route::get('/settings/company', [Settings\CompanyController::class, 'edit'])->name('settings.company');
                 Route::put('/settings/company', [Settings\CompanyController::class, 'update'])->name('settings.company.update');
+                Route::post('/settings/company/close', [Settings\CompanyController::class, 'close'])->name('settings.company.close');
                 Route::get('/settings/users', [Settings\MemberController::class, 'index'])->name('settings.users');
                 Route::post('/settings/users', [Settings\MemberController::class, 'store'])->name('settings.users.store');
                 Route::put('/settings/users/{id}', [Settings\MemberController::class, 'update'])->whereNumber('id')->name('settings.users.update');

@@ -49,3 +49,6 @@ alert-success alert-warning alert-danger alert-info alert-secondary
 #s-folder-tree #s-ruler #s-boxes-stacked #s-screwdriver-wrench
 # icons named in PHP (dashboard figures, CrudController screens)
 #s-cash-register #s-file-signature #s-cart-flatbed #s-warehouse #s-building #s-users-gear #s-triangle-exclamation #s-sitemap #s-id-badge
+# icons named in PHP (ReportBookController)
+#s-money-bill-transfer #s-hourglass-half #s-coins #s-percent #s-clock-rotate-left #s-chart-column
+d-print-block

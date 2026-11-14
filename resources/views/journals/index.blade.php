@@ -1,7 +1,11 @@
 @extends('layouts.app', ['title' => __('General Journal')])
 
 @section('content')
-<x-page-header :title="__('General Journal')" icon="book" :subtitle="__('Every entry posted to the ledger. Entries are never edited; a correction is a reversing entry.')" />
+<x-page-header :title="__('General Journal')" icon="book" :subtitle="__('Every entry posted to the ledger. Entries are never edited; a correction is a reversing entry.')">
+    @if (can_do('journals.create'))
+        <a class="btn btn-primary" href="{{ route('journals.create') }}"><x-icon name="plus" class="me-1" /> {{ __('New journal entry') }}</a>
+    @endif
+</x-page-header>
 
 <div class="card">
     <div class="card-body">

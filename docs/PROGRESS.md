@@ -1,6 +1,6 @@
 # Fida Ledger: progress
 
-Last updated: 2026-11-15 (stage 3). Branch: `development`.
+Last updated: 2026-11-15 (stage 4). Branch: `development`.
 
 ## Read this first
 
@@ -77,6 +77,16 @@ and a workflow test (`tests/Feature/BusinessModulesTest`, not run):
   (one per month), editable draft, approval (accrual), payment, payslips.
 - Dashboard figures for the modules that are switched on.
 
+## Built in stage 4 (written without being run, like the rest)
+
+- Modules are decided by the plan (no selection by the company); cash payments need no receipt.
+- Manual journal entries with reversal; Inventory and the purchase accrual are closed to them.
+- Year-end closing to Retained earnings with period lock; Profit & Loss ignores closing entries.
+- Report book with CSV and print: cash flow, receivables aging, currency balances, tax, audit,
+  product sales, purchases by supplier, warehouse summary, POS daily sales, depreciation,
+  employee payroll. The Reports page lists every report, grouped, by module and permission.
+- Tests written: `tests/Feature/ReportsTest`.
+
 ## Not built yet
 
 Inside the Business modules:
@@ -91,11 +101,10 @@ Inside the Business modules:
 Starter scope still missing:
 - Email verification, optional 2FA, a local mail viewer (password links go to the mail log locally).
 - Invoice templates (one layout exists), invoice-level discount, WhatsApp sharing.
-- Money In/Out categories; manual journal entries.
-- Monetary revaluation; FX difference on settling foreign receivables/payables; year-end closing.
-- Reports: cash flow, cashbook/bankbook, aging, currency balances, exchange gain/loss, tax,
-  audit log viewer, and the operational reports (product sales, purchases, valuation by warehouse,
-  register reconciliation, depreciation, payroll). PDF export (pages print through the browser).
+- Money In/Out categories.
+- Monetary revaluation; FX difference on settling foreign receivables/payables.
+- Payables aging by bill (supplier payments are not matched to single bills).
+- PDF files made by the server (reports print through the browser, which can save a PDF).
 - Settings: custom roles, numbering sequences, branding, language, security, API access.
 - Dari and Pashto translations (the layout is RTL-ready; strings are English only).
 - Bank reconciliation, statement import, budgets, recurring transactions.
@@ -112,7 +121,6 @@ API documentation, source ZIP.
 
 1. Run everything on MySQL (`docs/INSTALL-MAC.md`), fix what fails, then a browser pass on
    desktop and phone. Nothing below should start before this.
-2. Reports and exports (financial and operational), manual journals, year-end closing, revaluation.
-3. Banking (reconciliation, imports), budgets, recurring transactions.
-4. The rest of the admin panel and of Settings; email verification, 2FA.
-5. Dari and Pashto translations; RelayWA; Sanctum API; documentation.
+2. Banking (reconciliation, imports), budgets, recurring transactions.
+3. The rest of the admin panel and of Settings; email verification, 2FA.
+4. Dari and Pashto translations; RelayWA; Sanctum API; documentation.

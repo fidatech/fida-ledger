@@ -80,6 +80,7 @@ return [
         ['3000', 'Equity', 'equity', null, null, null],
         ['3100', 'Owner capital', 'equity', '3000', 'capital', 'capital'],
         ['3200', 'Owner drawings', 'equity', '3000', 'capital', 'drawings'],
+        ['3300', 'Retained earnings', 'equity', '3000', 'equity', 'retained_earnings'],
         ['3900', 'Opening balances', 'equity', '3000', 'equity', 'opening_balances'],
         ['4000', 'Income', 'income', null, null, null],
         ['4100', 'Sales', 'income', '4000', 'income', 'sales'],
@@ -137,7 +138,7 @@ return [
     'roles' => [
         'owner' => ['label' => 'Company owner', 'can' => ['*']],
         'admin' => ['label' => 'Administrator', 'can' => ['*']],
-        'accountant' => ['label' => 'Accountant', 'can' => ['accounts.view', 'accounts.manage', 'money.view', 'money.create', 'money.void', 'transfers.create', 'invoices.view', 'invoices.manage', 'products.view', 'products.manage', 'journals.view', 'reports.view', 'reports.export',
+        'accountant' => ['label' => 'Accountant', 'can' => ['accounts.view', 'accounts.manage', 'money.view', 'money.create', 'money.void', 'transfers.create', 'invoices.view', 'invoices.manage', 'products.view', 'products.manage', 'journals.view', 'journals.create', 'reports.view', 'reports.export',
             'inventory.view', 'inventory.manage', 'purchases.view', 'purchases.manage', 'purchases.approve', 'sales.view', 'sales.manage', 'pos.use', 'pos.close', 'assets.view', 'assets.manage']],
         'cashier' => ['label' => 'Cashier', 'can' => ['accounts.view', 'money.view', 'money.create', 'transfers.create', 'invoices.view', 'products.view', 'pos.use', 'pos.close']],
         'salesperson' => ['label' => 'Salesperson', 'can' => ['accounts.view', 'money.view', 'invoices.view', 'invoices.manage', 'products.view', 'inventory.view', 'sales.view', 'sales.manage', 'pos.use']],

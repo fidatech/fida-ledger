@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Accounting\Closing;
 use App\Models\AuditLog;
 use DateTimeZone;
 use Illuminate\Http\RedirectResponse;
@@ -39,5 +40,15 @@ class CompanyController extends Controller
         }
 
         return back()->with('success', __('Settings saved.'));
+    }
+
+    /** Year-end closing: the result of the year goes to retained earnings and the books are locked to that day. */
+    public function close(Request $request): RedirectResponse
+    {
+        $data = $request->validate(['date' => ['required', 'date', 'before_or_equal:today']]);
+        $entry = Closing::close(company(), substr($data['date'], 0, 10));
+        AuditLog::record('closed financial year', substr($data['date'], 0, 10), ['entry' => $entry->number]);
+
+        return back()->with('success', __('The year is closed. Entry #:number was posted and the books are locked up to :date.', ['number' => $entry->number, 'date' => fmt_date($data['date'])]));
     }
 }

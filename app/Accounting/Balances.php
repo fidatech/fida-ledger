@@ -95,6 +95,9 @@ class Balances
     public static function byClass(Company $company, ?string $from, ?string $until): array
     {
         return self::lines($company->id)
+            // a period's result is measured before the year-end entry that moved it to equity;
+            // "everything up to a day" (the balance sheet) keeps that entry in
+            ->when($from !== null, fn (Builder $query) => self::withoutClosing($query, $company->id))
             ->join('accounts', 'accounts.id', '=', 'journal_lines.account_id')
             ->when($from, fn (Builder $query) => $query->where('journal_lines.date', '>=', $from))
             ->when($until, fn (Builder $query) => $query->where('journal_lines.date', '<=', $until))
@@ -111,9 +114,10 @@ class Balances
      *
      * @return Collection<int, string> keyed by account id
      */
-    public static function baseByAccount(int $companyId, ?string $from, ?string $until): Collection
+    public static function baseByAccount(int $companyId, ?string $from, ?string $until, bool $withoutClosing = false): Collection
     {
         return self::lines($companyId)
+            ->when($withoutClosing, fn (Builder $query) => self::withoutClosing($query, $companyId))
             ->when($from, fn (Builder $query) => $query->where('date', '>=', $from))
             ->when($until, fn (Builder $query) => $query->where('date', '<=', $until))
             ->groupBy('account_id')
@@ -136,6 +140,12 @@ class Balances
     public static function natural(string $class, mixed $debitMinusCredit): string
     {
         return config('ledger.classes.'.$class) === 'credit' ? Dec::neg($debitMinusCredit) : Dec::round($debitMinusCredit);
+    }
+
+    /** Leave out year-end closing entries: they empty income and expense accounts and would hide the year's result. */
+    private static function withoutClosing(Builder $query, int $companyId): Builder
+    {
+        return $query->whereNotIn('journal_lines.journal_entry_id', DB::table('journal_entries')->where('company_id', $companyId)->where('source_type', 'closing')->select('id'));
     }
 
     private static function lines(int $companyId): Builder

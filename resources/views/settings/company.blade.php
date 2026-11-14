@@ -53,4 +53,19 @@
         <button type="submit" class="btn btn-primary"><x-icon name="check" class="me-1" /> {{ __('Save') }}</button>
     </div>
 </form>
+
+<form method="POST" action="{{ route('settings.company.close') }}" class="card" data-confirm="{{ __('Close the financial year?') }}" data-confirm-text="{{ __('Income and expenses up to that day are moved to Retained earnings and the books are locked up to that day.') }}" data-confirm-ok="{{ __('Close the year') }}" data-confirm-style="primary">
+    @csrf
+    <div class="card-header"><h5 class="card-title mb-0">{{ __('Year-end closing') }}</h5></div>
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-12 col-md-4">
+                <label class="form-label" for="close_date">{{ __('Last day of the year to close') }} <span class="text-danger">*</span></label>
+                <x-date name="date" :value="(date('Y') - 1).'-12-31'" :required="true" id="close_date" />
+            </div>
+            <div class="col-12 col-md-4"><button type="submit" class="btn btn-outline-soft"><x-icon name="lock" class="me-1" /> {{ __('Close the year') }}</button></div>
+        </div>
+        <p class="small text-muted mt-2 mb-0">{{ __('Profit & Loss for the closed year still shows its result. The Balance Sheet shows it inside Retained earnings.') }}</p>
+    </div>
+</form>
 @endsection

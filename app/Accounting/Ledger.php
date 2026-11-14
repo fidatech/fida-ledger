@@ -32,6 +32,7 @@ class Ledger
      *     description?: ?string,
      *     reference?: ?string,
      *     source?: ?Model,
+     *     source_type?: ?string,
      *     idempotency_key?: ?string,
      *     reversal_of_id?: ?int,
      *     lines: list<array{account: Account|int, debit?: mixed, credit?: mixed, currency?: ?string, rate?: mixed, base?: mixed, description?: ?string}>
@@ -63,7 +64,8 @@ class Ledger
                 'date' => $date,
                 'description' => $data['description'] ?? null,
                 'reference' => $data['reference'] ?? null,
-                'source_type' => isset($data['source']) ? $data['source']->getMorphClass() : null,
+                // a document, or a plain word for entries that have none ('closing': a year-end closing entry)
+                'source_type' => isset($data['source']) ? $data['source']->getMorphClass() : ($data['source_type'] ?? null),
                 'source_id' => isset($data['source']) ? $data['source']->getKey() : null,
                 'idempotency_key' => $key,
                 'reversal_of_id' => $data['reversal_of_id'] ?? null,

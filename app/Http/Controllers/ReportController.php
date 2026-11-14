@@ -52,7 +52,7 @@ class ReportController extends Controller
         $today = today_iso();
         $from = query_date('from') ?? substr($today, 0, 4).'-01-01';
         $until = query_date('until') ?? $today;
-        $balances = Balances::baseByAccount(company_id(), $from, $until);
+        $balances = Balances::baseByAccount(company_id(), $from, $until, true); // before any year-end closing entry
         $accounts = $this->accounts($balances);
 
         $section = fn (string $class) => $accounts->where('class', $class)->map(fn (Account $account) => [
