@@ -10,7 +10,13 @@
 <form method="POST" action="{{ route('money.store', ['direction' => $direction]) }}" class="card" enctype="multipart/form-data" data-confirm="{{ $in ? __('Record this Money In?') : __('Record this Money Out?') }}" data-confirm-text="{{ __('It is posted to the ledger at once. A mistake is corrected by cancelling it, not by editing.') }}" data-confirm-ok="{{ __('Record') }}" data-confirm-style="primary">
     @csrf
     <input type="hidden" name="once" value="{{ old('once', $once) }}">
+    @if ($invoice ?? null)
+        <input type="hidden" name="invoice_id" value="{{ $invoice->id }}">
+    @endif
     <div class="card-body">
+        @if ($invoice ?? null)
+            <div class="alert alert-info">{{ __('Payment for :invoice of :customer. Still due: :due. Receive it into an account in :currency.', ['invoice' => $invoice->code(), 'customer' => $invoice->customer?->name, 'due' => money($invoice->due(), $invoice->currency), 'currency' => $invoice->currency]) }}</div>
+        @endif
         @if ($errors->any())
             <div class="alert alert-danger">{{ $errors->first() }}</div>
         @endif
@@ -18,7 +24,7 @@
             <div class="col-12 col-md-6">
                 <label class="form-label" for="kind">{{ $in ? __('What is this money?') : __('What is this payment for?') }} <span class="text-danger">*</span></label>
                 {{-- choosing a kind reloads the form with the accounts that fit it --}}
-                <select class="form-select" id="kind" name="kind" required data-plain onchange="location.href='{{ route('money.create', ['direction' => $direction]) }}?kind='+this.value">
+                <select class="form-select" id="kind" name="kind" required data-plain @if ($invoice ?? null) style="pointer-events:none" tabindex="-1" @else onchange="location.href='{{ route('money.create', ['direction' => $direction]) }}?kind='+this.value" @endif>
                     @foreach ($kinds as $value => $option)
                         <option value="{{ $value }}" @selected($kind === $value)>{{ __($option['label']) }}</option>
                     @endforeach
@@ -41,14 +47,14 @@
                 <label class="form-label" for="cash_account_id">{{ $in ? __('Into cash or bank account') : __('From cash or bank account') }} <span class="text-danger">*</span></label>
                 <select class="form-select" id="cash_account_id" name="cash_account_id" required>
                     @foreach ($cashAccounts as $account)
-                        <option value="{{ $account->id }}" @selected((int) old('cash_account_id') === $account->id)>{{ $account->label() }}</option>
+                        <option value="{{ $account->id }}" @selected(old('cash_account_id') !== null ? (int) old('cash_account_id') === $account->id : (($invoice ?? null) && $account->currency === $invoice->currency))>{{ $account->label() }}</option>
                     @endforeach
                 </select>
                 <div class="form-text">{{ __('The amount is in the currency of this account.') }}</div>
             </div>
             <div class="col-6 col-md-3">
                 <label class="form-label" for="amount">{{ __('Amount') }} <span class="text-danger">*</span></label>
-                <input type="text" inputmode="decimal" class="form-control" id="amount" name="amount" value="{{ old('amount') }}" autocomplete="off" dir="ltr" required>
+                <input type="text" inputmode="decimal" class="form-control" id="amount" name="amount" value="{{ old('amount', ($invoice ?? null) ? rtrim(rtrim($invoice->due(), '0'), '.') : '') }}" autocomplete="off" dir="ltr" required>
             </div>
             <div class="col-6 col-md-3">
                 <label class="form-label" for="date">{{ __('Date') }} <span class="text-danger">*</span></label>

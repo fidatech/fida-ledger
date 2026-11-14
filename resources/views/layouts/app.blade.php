@@ -3,6 +3,7 @@
     $quick = array_values(array_filter([
         can_do('money.create') ? [__('Money In'), 'arrow-down', route('money.create', ['direction' => 'in']), 'success'] : null,
         can_do('money.create') ? [__('Money Out'), 'arrow-up', route('money.create', ['direction' => 'out']), 'danger'] : null,
+        can_do('invoices.manage') ? [__('Invoice'), 'file-invoice-dollar', route('invoices.create'), 'purple'] : null,
         can_do('accounts.manage') ? [__('Customer'), 'user-tag', route('accounts.create', ['kind' => 'customer']), 'primary'] : null,
         can_do('accounts.manage') ? [__('Supplier'), 'truck-field', route('accounts.create', ['kind' => 'supplier']), 'info'] : null,
         can_do('transfers.create') ? [__('Transfer'), 'right-left', route('transfers.create'), 'teal'] : null,

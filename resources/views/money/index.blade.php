@@ -5,6 +5,9 @@
     $in = $direction === 'in';
 @endphp
 <x-page-header :title="$in ? __('Money In History') : __('Money Out History')" :icon="$in ? 'arrow-down' : 'arrow-up'">
+    @if (can_do('reports.export'))
+        <a class="btn btn-outline-soft" href="{{ request()->fullUrlWithQuery(['export' => 'csv']) }}"><x-icon name="file-arrow-down" class="me-1" /> {{ __('Excel (CSV)') }}</a>
+    @endif
     @if (can_do('money.create'))
         <a class="btn {{ $in ? 'btn-success' : 'btn-danger' }}" href="{{ route('money.create', ['direction' => $direction]) }}"><x-icon name="plus" class="me-1" /> {{ $in ? __('Record Money In') : __('Record Money Out') }}</a>
     @endif

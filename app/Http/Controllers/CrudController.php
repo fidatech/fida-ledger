@@ -42,6 +42,9 @@ abstract class CrudController extends Controller
 
     protected string $icon = 'file';
 
+    /** The permission needed to add, change or delete (null: everyone who can open the list). The routes check it too. */
+    protected ?string $managePermission = null;
+
     /** @var array<int, string> */
     protected array $search = ['name'];
 
@@ -134,7 +137,7 @@ abstract class CrudController extends Controller
             'columns' => $this->columns(),
             'term' => $term,
             'filters' => $this->filters($request),
-            'canManage' => true,
+            'canManage' => $this->managePermission === null || can_do($this->managePermission),
             'totals' => $this->totals($request),
             'headerLinks' => $this->headerLinks($request),
             'links' => fn (Model $record) => $this->rowLinks($record),

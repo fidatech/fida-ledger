@@ -40,3 +40,10 @@ avatar-soft-warning avatar-soft-danger avatar-soft-primary
 
 # DueBook website: the icons of the feature list come from config/site.php
 #s-envelope #s-file-signature #s-hand-holding-dollar #s-handshake #s-arrow-trend-up #s-coins #s-chart-column #s-user-group #s-wallet #s-bell #s-building
+
+# Fida Ledger: colours picked from a list in PHP (badge of an invoice, alert of the billing page)
+bg-info-subtle text-info-emphasis bg-primary-subtle text-primary-emphasis bg-secondary-subtle text-secondary-emphasis
+bg-success-subtle text-success-emphasis bg-warning-subtle text-warning-emphasis bg-danger-subtle text-danger-emphasis
+alert-success alert-warning alert-danger alert-info alert-secondary
+# icons named in controllers (CrudController screens)
+#s-folder-tree #s-ruler #s-boxes-stacked #s-screwdriver-wrench

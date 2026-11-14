@@ -13,6 +13,9 @@
             <button type="submit" class="btn btn-outline-soft"><x-icon name="box-archive" class="me-1" /> {{ $account->is_archived ? __('Restore') : __('Archive') }}</button>
         </form>
     @endif
+    @if (can_do('reports.export'))
+        <a class="btn btn-outline-soft" href="{{ request()->fullUrlWithQuery(['export' => 'csv']) }}"><x-icon name="file-arrow-down" class="me-1" /> {{ __('Excel (CSV)') }}</a>
+    @endif
     <button type="button" class="btn btn-outline-soft" onclick="window.print()"><x-icon name="print" class="me-1" /> {{ __('Print') }}</button>
 </x-page-header>
 

@@ -36,12 +36,28 @@ return [
         ['label' => 'Exchange Rates', 'route' => 'settings.rates', 'can' => 'settings.manage'],
         ['label' => 'Transfer & Exchange History', 'route' => 'transfers.index'],
     ]],
+    ['label' => 'Invoicing', 'icon' => 'file-invoice-dollar', 'can' => 'invoices.view', 'children' => [
+        ['label' => 'All Invoices', 'route' => 'invoices.index', 'active' => 'invoices.*'],
+        ['label' => 'Create Invoice', 'route' => 'invoices.create', 'can' => 'invoices.manage'],
+        ['label' => 'Credit Notes', 'route' => 'invoices.index', 'params' => ['type' => 'credit_note'], 'active' => 'invoices.*'],
+    ]],
+
+    ['heading' => 'Business Operations'],
+    ['label' => 'Products & Services', 'icon' => 'boxes-stacked', 'module' => 'products', 'can' => 'products.view', 'children' => [
+        ['label' => 'All Products', 'route' => 'products.index', 'params' => ['type' => 'product'], 'active' => 'products.*'],
+        ['label' => 'Services', 'route' => 'products.index', 'params' => ['type' => 'service'], 'active' => 'products.*'],
+        ['label' => 'Categories', 'route' => 'product-categories.index', 'active' => 'product-categories.*'],
+        ['label' => 'Units', 'route' => 'units.index', 'active' => 'units.*'],
+    ]],
 
     ['heading' => 'Management'],
     ['label' => 'General Journal', 'icon' => 'book', 'route' => 'journals.index', 'active' => 'journals.*', 'can' => 'journals.view'],
     ['label' => 'Reports', 'icon' => 'chart-column', 'route' => 'reports.index', 'active' => 'reports.*', 'can' => 'reports.view'],
     ['label' => 'Settings', 'icon' => 'gear', 'children' => [
+        ['label' => 'Company Profile', 'route' => 'settings.company', 'can' => 'settings.manage'],
+        ['label' => 'Users & Roles', 'route' => 'settings.users', 'can' => 'settings.manage'],
         ['label' => 'Modules', 'route' => 'settings.modules', 'can' => 'settings.manage'],
+        ['label' => 'Currencies', 'route' => 'settings.currencies', 'can' => 'settings.manage'],
         ['label' => 'Subscription & Billing', 'route' => 'billing.show'],
     ]],
 ];

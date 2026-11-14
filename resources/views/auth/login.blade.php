@@ -22,9 +22,12 @@
                 <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-check mb-4">
-            <input class="form-check-input" type="checkbox" id="remember" name="remember" value="1" checked>
-            <label class="form-check-label small" for="remember">{{ __('app.auth.remember') }}</label>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check mb-0">
+                <input class="form-check-input" type="checkbox" id="remember" name="remember" value="1" checked>
+                <label class="form-check-label small" for="remember">{{ __('app.auth.remember') }}</label>
+            </div>
+            <a class="small text-decoration-none" href="{{ route('password.request') }}">{{ __('Forgot your password?') }}</a>
         </div>
         <button type="submit" class="btn btn-gradient btn-lg w-100">{{ __('app.auth.submit') }} <x-icon name="arrow-right" class="ms-1" /></button>
     </form>

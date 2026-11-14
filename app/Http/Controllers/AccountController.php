@@ -8,6 +8,7 @@ use App\Exceptions\UserError;
 use App\Models\Account;
 use App\Models\AuditLog;
 use App\Models\JournalLine;
+use App\Support\Csv;
 use App\Support\Dec;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -88,7 +89,7 @@ class AccountController extends Controller
     }
 
     /** The detail page of an account: balance in each currency and its statement. */
-    public function show(Request $request): View
+    public function show(Request $request): View|\Symfony\Component\HttpFoundation\StreamedResponse
     {
         $account = Account::where('is_group', false)->findOrFail($request->route('id'));
         $today = today_iso();
@@ -113,6 +114,14 @@ class AccountController extends Controller
         foreach ($lines as $line) {
             $running[$line->currency] = Dec::add($running[$line->currency] ?? '0', Dec::sub($line->debit, $line->credit));
             $rows[] = ['line' => $line, 'balance' => Balances::natural($account->class, $running[$line->currency])];
+        }
+
+        if ($request->query('export') === 'csv') {
+            abort_unless(can_do('reports.export'), 403);
+
+            return Csv::download('statement-'.$account->code, ['Date', 'Entry', 'Description', 'Currency', 'Debit', 'Credit', 'Balance'], array_map(fn (array $row) => [
+                $row['line']->date->toDateString(), $row['line']->entry?->number, $row['line']->description ?: $row['line']->entry?->description, $row['line']->currency, $row['line']->debit, $row['line']->credit, $row['balance'],
+            ], $rows));
         }
 
         return view('accounts.show', [

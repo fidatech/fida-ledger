@@ -3,10 +3,13 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\Catalog;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\MoneyController;
 use App\Http\Controllers\OnboardingController;
@@ -14,6 +17,9 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings;
 use App\Http\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
+
+// {type} in /products/{type} is "product" or "service"
+Route::pattern('type', 'product|service');
 
 Route::redirect('/', '/dashboard');
 
@@ -24,6 +30,10 @@ Route::middleware('guest:web')->group(function () {
     Route::post('/login', [LoginController::class, 'store'])->name('login.store');
     Route::get('/register', [RegisterController::class, 'show'])->name('register');
     Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:10,1')->name('register.store');
+    Route::get('/forgot-password', [PasswordController::class, 'request'])->name('password.request');
+    Route::post('/forgot-password', [PasswordController::class, 'email'])->middleware('throttle:6,10')->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordController::class, 'reset'])->name('password.reset');
+    Route::post('/reset-password', [PasswordController::class, 'store'])->name('password.store');
 });
 
 Route::middleware('auth:web')->group(function () {
@@ -81,6 +91,39 @@ Route::middleware('auth:web')->group(function () {
                 Route::post('/transfers', [TransferController::class, 'store'])->name('transfers.store');
             });
 
+            // Invoicing (every plan)
+            Route::middleware('can.do:invoices.view')->group(function () {
+                Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+                Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->whereNumber('id')->name('invoices.show');
+            });
+            Route::middleware('can.do:invoices.manage')->group(function () {
+                Route::get('/invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
+                Route::post('/invoices', [InvoiceController::class, 'store'])->name('invoices.store');
+                Route::get('/invoices/{id}/edit', [InvoiceController::class, 'edit'])->whereNumber('id')->name('invoices.edit');
+                Route::put('/invoices/{id}', [InvoiceController::class, 'update'])->whereNumber('id')->name('invoices.update');
+                Route::post('/invoices/{id}/issue', [InvoiceController::class, 'issue'])->whereNumber('id')->name('invoices.issue');
+                Route::post('/invoices/{id}/void', [InvoiceController::class, 'void'])->whereNumber('id')->name('invoices.void');
+            });
+
+            // Products & Services (Business module "products"): the list for those who may see it, changes for those who may manage
+            Route::middleware('module:products')->group(function () {
+                $screens = [
+                    ['/products/{type}', Catalog\ProductController::class, 'products'],
+                    ['/product-categories', Catalog\CategoryController::class, 'product-categories'],
+                    ['/units', Catalog\UnitController::class, 'units'],
+                ];
+                foreach ($screens as [$uri, $controller, $name]) {
+                    Route::get($uri, [$controller, 'index'])->middleware('can.do:products.view')->name($name.'.index');
+                    Route::middleware('can.do:products.manage')->group(function () use ($uri, $controller, $name) {
+                        Route::get($uri.'/create', [$controller, 'create'])->name($name.'.create');
+                        Route::post($uri, [$controller, 'store'])->name($name.'.store');
+                        Route::get($uri.'/{id}/edit', [$controller, 'edit'])->whereNumber('id')->name($name.'.edit');
+                        Route::put($uri.'/{id}', [$controller, 'update'])->whereNumber('id')->name($name.'.update');
+                        Route::delete($uri.'/{id}', [$controller, 'destroy'])->whereNumber('id')->name($name.'.destroy');
+                    });
+                }
+            });
+
             // General journal
             Route::middleware('can.do:journals.view')->group(function () {
                 Route::get('/journal', [JournalController::class, 'index'])->name('journals.index');
@@ -101,6 +144,14 @@ Route::middleware('auth:web')->group(function () {
                 Route::put('/settings/modules', [Settings\ModuleController::class, 'update'])->name('settings.modules.update');
                 Route::get('/settings/rates', [Settings\RateController::class, 'index'])->name('settings.rates');
                 Route::post('/settings/rates', [Settings\RateController::class, 'store'])->name('settings.rates.store');
+                Route::get('/settings/company', [Settings\CompanyController::class, 'edit'])->name('settings.company');
+                Route::put('/settings/company', [Settings\CompanyController::class, 'update'])->name('settings.company.update');
+                Route::get('/settings/users', [Settings\MemberController::class, 'index'])->name('settings.users');
+                Route::post('/settings/users', [Settings\MemberController::class, 'store'])->name('settings.users.store');
+                Route::put('/settings/users/{id}', [Settings\MemberController::class, 'update'])->whereNumber('id')->name('settings.users.update');
+                Route::get('/settings/currencies', [Settings\CurrencyController::class, 'index'])->name('settings.currencies');
+                Route::post('/settings/currencies', [Settings\CurrencyController::class, 'store'])->name('settings.currencies.store');
+                Route::post('/settings/currencies/{id}/toggle', [Settings\CurrencyController::class, 'toggle'])->whereNumber('id')->name('settings.currencies.toggle');
             });
         });
     });
@@ -121,5 +172,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/payments/{id}/approve', [Admin\PaymentController::class, 'approve'])->whereNumber('id')->name('payments.approve');
         Route::post('/payments/{id}/reject', [Admin\PaymentController::class, 'reject'])->whereNumber('id')->name('payments.reject');
         Route::get('/payments/{id}/receipt', [Admin\PaymentController::class, 'receipt'])->whereNumber('id')->name('payments.receipt');
+        Route::get('/companies', [Admin\CompanyController::class, 'index'])->name('companies.index');
+        Route::post('/companies/{id}/suspend', [Admin\CompanyController::class, 'suspend'])->whereNumber('id')->name('companies.suspend');
+        Route::get('/plans', [Admin\PlanController::class, 'index'])->name('plans.index');
+        Route::put('/plans/{id}', [Admin\PlanController::class, 'update'])->whereNumber('id')->name('plans.update');
     });
 });

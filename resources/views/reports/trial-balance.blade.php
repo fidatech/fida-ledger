@@ -2,6 +2,9 @@
 
 @section('content')
 <x-page-header :title="__('Trial Balance')" icon="scale-balanced" :subtitle="__('As of :date, in :currency', ['date' => fmt_date($until), 'currency' => base_currency()])" :crumbs="[[__('Reports'), route('reports.index')], [__('Trial Balance')]]">
+    @if (can_do('reports.export'))
+        <a class="btn btn-outline-soft" href="{{ request()->fullUrlWithQuery(['export' => 'csv']) }}"><x-icon name="file-arrow-down" class="me-1" /> {{ __('Excel (CSV)') }}</a>
+    @endif
     <button type="button" class="btn btn-outline-soft" onclick="window.print()"><x-icon name="print" class="me-1" /> {{ __('Print') }}</button>
 </x-page-header>
 

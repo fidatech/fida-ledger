@@ -5,9 +5,9 @@ Laravel 13, Blade, MySQL 8. The interface is built on the DueBook / fida-admin t
 (same layout, components, light/dark, phone tab bar). No Node is needed: assets are built by
 `php tools/build-assets.php`.
 
-> **Status: stage 1 of the build. This is not the finished product.**
+> **Status: stage 2 of the build. This is not the finished product.**
 > `docs/PROGRESS.md` lists exactly what exists, what does not, and what has not been run yet.
-> The code in this stage was written in an environment where Composer packages and MySQL could
+> The code so far was written in an environment where Composer packages and MySQL could
 > not be installed, so **the application and its tests have not been executed**. Every PHP file
 > passes `php -l`; nothing more is claimed. Run the steps below first and fix what they show.
 

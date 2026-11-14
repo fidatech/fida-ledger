@@ -4,6 +4,8 @@
     $menu = [
         ['Dashboard', 'gauge-high', 'admin.dashboard', 'admin.dashboard', false],
         ['Payment approvals', 'receipt', 'admin.payments.index', 'admin.payments.*', false],
+        ['Companies', 'building', 'admin.companies.index', 'admin.companies.*', false],
+        ['Subscription Plans', 'layer-group', 'admin.plans.index', 'admin.plans.*', false],
     ];
 @endphp
 <!DOCTYPE html>

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Accounting\Balances;
 use App\Models\Account;
+use App\Support\Csv;
 use App\Support\Dec;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
@@ -20,7 +22,7 @@ class ReportController extends Controller
     }
 
     /** Every account with a balance on a day: total debits must equal total credits. */
-    public function trialBalance(): View
+    public function trialBalance(): View|StreamedResponse
     {
         $until = query_date('until') ?? today_iso();
         $balances = Balances::baseByAccount(company_id(), null, $until);
@@ -29,6 +31,12 @@ class ReportController extends Controller
             'debit' => Dec::isPositive($balances[$account->id]) ? $balances[$account->id] : '0',
             'credit' => Dec::isNegative($balances[$account->id]) ? Dec::neg($balances[$account->id]) : '0',
         ]);
+
+        if (request()->query('export') === 'csv') {
+            abort_unless(can_do('reports.export'), 403);
+
+            return Csv::download('trial-balance-'.$until, ['Code', 'Account', 'Debit', 'Credit'], $rows->map(fn (array $row) => [$row['account']->code, $row['account']->name, $row['debit'], $row['credit']]));
+        }
 
         return view('reports.trial-balance', [
             'until' => $until,

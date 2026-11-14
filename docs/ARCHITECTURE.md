@@ -105,13 +105,29 @@ payroll
   currency, so they agree with the ledger by construction. Until a year-end closing exists,
   the balance sheet shows undistributed profit as its own equity line.
 
-## 8. Policies still to be confirmed before the Business modules are built
+## 8. Invoicing
 
-These change the accounting, so they are decided with the owner, not assumed:
+- A draft posts nothing and can be changed. Issuing posts once (idempotent): debit the
+  customer, credit the income account of each line and "Taxes payable". A credit note posts
+  the same entry with the sides swapped.
+- A payment is a Money In from the customer. `Invoices::allocate()` only links it to the
+  invoice (`invoice_payments`) and raises `invoices.paid`; it posts nothing, so income is
+  counted once. Cancelling the Money In removes the link and the invoice is due again.
+- An invoice is paid in its own currency. An invoice with payments cannot be cancelled.
+- In a foreign currency the customer's line carries the sum of the other lines' base values,
+  so rounding can never unbalance the entry.
+- Discounts are per line (an amount). Tax is a percentage per line.
 
-1. Inventory costing: moving weighted average (proposed) or FIFO.
-2. Purchases: accrue at goods receipt through a "goods received not invoiced" account
-   (proposed), or recognize only at the supplier bill.
-3. Negative stock: forbidden (proposed) or allowed with later cost correction.
-4. Payroll taxes and deductions: configurable tables only, no built-in national rules.
-5. Upgrade from Starter to Business: what is charged.
+## 9. Policies adopted for the Business modules
+
+The owner asked for the system to be completed without answering these, so the proposals
+stand and are to be implemented as written. Changing one later means changing the module, not
+the ledger.
+
+1. Inventory costing: **moving weighted average** per product and warehouse.
+2. Purchases: **accrue at goods receipt** (debit Inventory, credit "Goods received not
+   invoiced"); the supplier bill clears that account against the supplier. Stock is raised
+   once, by the receipt.
+3. Negative stock: **forbidden**. A delivery or POS sale of more than is on hand is refused.
+4. Payroll taxes and deductions: configurable tables only; no national rules are built in.
+5. Upgrade from Starter to Business: done by an administrator; the price is not automated.

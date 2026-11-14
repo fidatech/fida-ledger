@@ -1,10 +1,10 @@
 # Fida Ledger: progress
 
-Last updated: 2026-11-15 (stage 1). Branch: `development`.
+Last updated: 2026-11-15 (stage 2). Branch: `development`.
 
 ## Read this first
 
-Stage 1 was written in a cloud workspace where Composer packages and MySQL could not be
+Stages 1 and 2 were written in a cloud workspace where Composer packages and MySQL could not be
 installed. **Nothing here has been run**: no `composer install`, no migration, no test, no
 browser. What was checked: every PHP file passes `php -l`; Blade directives are balanced; every
 icon used exists in the sprite; the asset build (`php tools/build-assets.php`) ran and its
@@ -38,44 +38,52 @@ output is committed. The first job on a machine with PHP 8.3+/bcmath, Composer a
 - Dashboard: cash per currency, base total, receivables, payables, Money In/Out, profit, recent.
 - Tests written (not run): `tests/Unit/DecTest`, `tests/Feature/{Registration,Ledger,Isolation}Test`.
 
+## Built in stage 2 (unverified in the same way)
+
+- Invoicing: drafts, issue, credit notes, cancel by reversal, printable document, list with
+  status filters, "Receive payment" through Money In with allocation (part and full payment).
+- Products & Services module (the first Business module): products, services, categories,
+  units, SKU, barcode, prices, tax rate, stock flag, reorder level; invoice lines can pick from it.
+  The module's screens exist only while the module is switched on.
+- Settings: company profile and accounting period lock, users & roles (add, change role,
+  switch access off, seat limit), currencies (add, switch on or off).
+- Password recovery by email link.
+- Excel-compatible CSV export of Money In/Out history, account statements and the trial balance.
+- Platform side: companies list with suspend / restore, plan and price editing.
+- Tests written (not run): `tests/Feature/{Invoice,Settings}Test`.
+
 ## Not built yet
 
 Starter scope still missing:
-- Email verification, password recovery, optional 2FA, local mail viewer.
-- Invoicing (invoices, receipts, credit notes, templates), taxes.
-- Money In/Out categories; manual journal entries; loans & debts screens beyond the accounts.
-- Monetary revaluation; FX difference on settling foreign receivables/payables; period closing UI.
-- Remaining reports: cash flow, cashbook/bankbook, aging, currency balances, exchange gain/loss
-  report, tax, audit. PDF / Excel / CSV export (pages print through the browser for now).
-- Company settings: profile, users & roles (inviting users, custom roles), currencies, financial
-  year and period locks UI, numbering, language, security, API access.
+- Email verification, optional 2FA, a local mail viewer (password links go to the mail log locally).
+- Invoice templates (one layout exists), invoice-level discount, refunds linked to credit notes,
+  WhatsApp sharing.
+- Money In/Out categories; manual journal entries.
+- Monetary revaluation; FX difference on settling foreign receivables/payables; year-end closing.
+- Remaining reports: cash flow, cashbook/bankbook, aging, currency balances, exchange gain/loss,
+  tax, audit log viewer. PDF export (pages print through the browser; CSV covers Excel).
+- Settings still missing: custom roles, numbering sequences, branding, language, security, API access.
 - Dari and Pashto translations (the layout is RTL-ready; strings are English only).
 - WhatsApp / RelayWA integration. The provider's API was not consulted yet.
 - Sanctum API.
 
-Business modules: **none of the seven is built** (Products & Services, Purchasing, Inventory,
-Sales, Point of Sale, Fixed Assets, Payroll). The entitlement switches exist; the modules do
-not. Bank reconciliation, budgets and recurring transactions are not built either.
+Business modules: **one of seven is built** (Products & Services, without variants, price
+lists and barcode printing). Not built: Purchasing, Inventory, Sales Management, Point of
+Sale, Fixed Assets, Payroll. Their switches exist in Settings; their screens do not. Bank
+reconciliation, budgets and recurring transactions are not built either.
 
-Platform side still missing: companies list with suspend/restore, users, plan and price
-editing, module entitlement editing, seat limits, promotions, announcements, settings,
-audit log viewer, jobs, health, revenue reports, administrators management.
+Platform side still missing: users, module entitlement editing, promotions, announcements,
+settings, audit log viewer, jobs, health, revenue reports, administrators management.
 
 Deliverables not produced: user and super-admin documentation, deployment instructions,
 API documentation, source ZIP.
 
-## Decisions needed from the owner
-
-See `docs/ARCHITECTURE.md` section 8 (inventory costing, purchase accrual, negative stock,
-payroll rules, upgrade price).
-
 ## Suggested order for the next stages
 
-1. Run and fix stage 1 on MySQL. Browser pass on desktop and phone.
-2. Finish Starter: invoicing, settings (users & roles, currencies, period locks), remaining
-   reports and exports, email verification and password recovery, fa/ps translations.
-3. Admin panel: companies, plans and prices, entitlements, audit viewer.
-4. Business modules in dependency order: Products → Inventory → Purchasing → Sales → POS,
-   then Fixed Assets and Payroll, each posting through `Ledger::post()`.
+1. Run and fix stages 1 and 2 on MySQL. Browser pass on desktop and phone.
+2. Inventory (warehouses, movements, weighted average) → Purchasing → Sales → POS, each
+   posting through `Ledger::post()` with the policies in `docs/ARCHITECTURE.md` section 9.
+3. Fixed Assets and Payroll.
+4. The rest of Starter (reports, exports, verification, translations) and of the admin panel.
 5. Banking (reconciliation, imports), budgets, recurring transactions.
 6. RelayWA, Sanctum API, documentation, acceptance run.

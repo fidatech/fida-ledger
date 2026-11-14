@@ -124,6 +124,7 @@ class Money
 
             Ledger::reverse($movement->entry()->withoutGlobalScope('company')->firstOrFail(), null, $reason);
             $movement->update(['status' => MoneyMovement::VOID]);
+            Invoices::release($movement); // invoices it settled are due again
 
             return $movement;
         });

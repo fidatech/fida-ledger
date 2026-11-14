@@ -131,11 +131,11 @@ return [
     'roles' => [
         'owner' => ['label' => 'Company owner', 'can' => ['*']],
         'admin' => ['label' => 'Administrator', 'can' => ['*']],
-        'accountant' => ['label' => 'Accountant', 'can' => ['accounts.view', 'accounts.manage', 'money.view', 'money.create', 'money.void', 'transfers.create', 'journals.view', 'reports.view', 'reports.export']],
-        'cashier' => ['label' => 'Cashier', 'can' => ['accounts.view', 'money.view', 'money.create', 'transfers.create']],
-        'salesperson' => ['label' => 'Salesperson', 'can' => ['accounts.view', 'money.view']],
-        'storekeeper' => ['label' => 'Storekeeper', 'can' => []],
+        'accountant' => ['label' => 'Accountant', 'can' => ['accounts.view', 'accounts.manage', 'money.view', 'money.create', 'money.void', 'transfers.create', 'invoices.view', 'invoices.manage', 'products.view', 'products.manage', 'journals.view', 'reports.view', 'reports.export']],
+        'cashier' => ['label' => 'Cashier', 'can' => ['accounts.view', 'money.view', 'money.create', 'transfers.create', 'invoices.view', 'products.view']],
+        'salesperson' => ['label' => 'Salesperson', 'can' => ['accounts.view', 'money.view', 'invoices.view', 'invoices.manage', 'products.view']],
+        'storekeeper' => ['label' => 'Storekeeper', 'can' => ['products.view', 'products.manage']],
         'payroll' => ['label' => 'HR / payroll manager', 'can' => []],
-        'viewer' => ['label' => 'Viewer', 'can' => ['accounts.view', 'money.view', 'journals.view', 'reports.view']],
+        'viewer' => ['label' => 'Viewer', 'can' => ['accounts.view', 'money.view', 'invoices.view', 'products.view', 'journals.view', 'reports.view']],
     ],
 ];
