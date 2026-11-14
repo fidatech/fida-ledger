@@ -1,0 +1,14 @@
+{
+    "name": "Fida Ledger",
+    "short_name": "Fida Ledger",
+    "description": "Accounting and business management.",
+    "start_url": "/dashboard",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#f3f5f9",
+    "theme_color": "#3a7bf0",
+    "icons": [
+        { "src": "/img/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    ]
+}
