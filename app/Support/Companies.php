@@ -14,7 +14,7 @@ class Companies
 {
     /**
      * @param  array{name: string, type?: string, base_currency: string, country?: ?string, timezone?: string, phone?: ?string,
-     *     email?: ?string, plan: Plan, modules?: list<string>}  $data
+     *     email?: ?string, plan: Plan}  $data
      *
      * The company starts "pending": it can be used only after a system administrator approves its first payment.
      */
@@ -38,8 +38,10 @@ class Companies
 
             $company->users()->attach($owner->id, ['role' => 'owner', 'is_active' => true]);
 
-            // Starter has no optional modules; Business starts with the ones chosen at registration
-            Modules::set($company->setRelation('plan', $plan), $plan->code === Plan::BUSINESS ? ($data['modules'] ?? array_keys(Modules::all())) : []);
+            // the plan decides the modules, not the user: every module the plan includes is switched on
+            // (all seven for Business, none for Starter)
+            $company->setRelation('plan', $plan);
+            Modules::set($company, Modules::entitled($company));
 
             foreach (config('ledger.currencies') as $code => [$name, $symbol]) {
                 $currency = new Currency(['code' => $code, 'name' => $name, 'symbol' => $symbol]);

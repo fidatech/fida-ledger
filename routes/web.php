@@ -275,7 +275,6 @@ Route::middleware('auth:web')->group(function () {
             // Settings
             Route::middleware('can.do:settings.manage')->group(function () {
                 Route::get('/settings/modules', [Settings\ModuleController::class, 'edit'])->name('settings.modules');
-                Route::put('/settings/modules', [Settings\ModuleController::class, 'update'])->name('settings.modules.update');
                 Route::get('/settings/rates', [Settings\RateController::class, 'index'])->name('settings.rates');
                 Route::post('/settings/rates', [Settings\RateController::class, 'store'])->name('settings.rates.store');
                 Route::get('/settings/company', [Settings\CompanyController::class, 'edit'])->name('settings.company');

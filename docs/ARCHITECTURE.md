@@ -43,6 +43,9 @@ fixed_assets               │
 payroll
 ```
 
+- **The plan decides the modules.** A company does not pick them: opening a Business company
+  switches on all seven, a Starter company has none, and the registration and Settings screens
+  only show what the version includes. `Modules::set()` remains for the platform side (a plan change).
 - Switching a module on switches on what it needs. A module that an active module needs
   cannot be switched off. Starter is refused any Business module. Switching off deletes nothing.
 - Enforcement is on the server: routes of a module use `module:<key>`; the menu only mirrors it.

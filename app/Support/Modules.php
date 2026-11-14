@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\DB;
  *   entitled  the platform offers the module and the company's plan includes it
  *   active    entitled and switched on by the company
  *
- * Switching a module off hides it and blocks its screens; its records and journal entries stay.
+ * The plan decides: a company gets every module its plan includes and cannot pick or drop them
+ * itself. set() is called when a company is opened and by the platform side (a plan change);
+ * switching a module off hides it and blocks its screens, and its records and journal entries stay.
  */
 class Modules
 {

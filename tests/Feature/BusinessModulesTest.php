@@ -340,7 +340,7 @@ class BusinessModulesTest extends TestCase
         $this->get('/inventory')->assertOk();
 
         $this->workIn($company);
-        $this->put('/settings/modules', ['modules' => ['products']]);
+        \App\Support\Modules::set($company, ['products']); // what the platform side does when a plan changes
         foreach (['/inventory', '/purchases', '/sales/order', '/pos', '/assets', '/payroll'] as $page) {
             $this->get($page)->assertNotFound();
         }

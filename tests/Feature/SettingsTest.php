@@ -72,7 +72,7 @@ class SettingsTest extends TestCase
         $this->get('/invoices/create')->assertOk();
 
         // switched off: the screens are gone, the records are kept
-        $this->put('/settings/modules', ['modules' => []]);
+        \App\Support\Modules::set($company, []);
         $this->get('/products/product')->assertNotFound();
         $this->assertSame(2, Product::count());
 

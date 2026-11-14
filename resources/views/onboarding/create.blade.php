@@ -3,11 +3,10 @@
 @section('content')
 @php
     $chosen = old('plan', request('plan', 'business'));
-    $ticked = old('modules', array_keys($modules)); // all seven are ticked to begin with
 @endphp
 <div class="mb-3">
     <h1 class="h3 mb-1">{{ $first ? __('Set up your company') : __('Add a company') }}</h1>
-    <p class="text-muted mb-0">{{ __('Choose your version, then tell us about the company. There is no free plan and no trial: the company opens when its payment is approved.') }}</p>
+    <p class="text-muted mb-0">{{ __('Choose your version, then tell us about the company. Each version comes with its modules. There is no free plan and no trial: the company opens when its payment is approved.') }}</p>
 </div>
 
 @if ($errors->any())
@@ -35,6 +34,21 @@
                                 <hr class="my-2">
                                 <div class="d-flex justify-content-between"><span>{{ __('First year') }}</span><strong dir="ltr">{{ money(\App\Support\Dec::add($plan->setup_fee, $plan->annual_fee, 2), $plan->currency) }}</strong></div>
                                 <div class="d-flex justify-content-between small text-muted"><span>{{ __('Every year after') }}</span><span dir="ltr">{{ money($plan->annual_fee, $plan->currency) }}</span></div>
+                                <hr class="my-2">
+                                {{-- the modules come with the version: they are shown, not chosen --}}
+                                <div class="small fw-semibold mb-1">{{ __('Modules') }}</div>
+                                <ul class="list-unstyled small mb-0">
+                                    @foreach (config('billing.core_modules') as $name)
+                                        <li class="d-flex gap-2"><span class="text-success"><x-icon name="circle-check" /></span><span>{{ __($name) }}</span></li>
+                                    @endforeach
+                                    @foreach ($modules as $key => $module)
+                                        @if (in_array($plan->code, $includes[$key] ?? [], true))
+                                            <li class="d-flex gap-2"><span class="text-success"><x-icon name="circle-check" /></span><span class="fw-semibold">{{ __($module['name']) }}</span></li>
+                                        @else
+                                            <li class="d-flex gap-2 text-muted"><span><x-icon name="circle-xmark" /></span><span class="text-decoration-line-through">{{ __($module['name']) }}</span></li>
+                                        @endif
+                                    @endforeach
+                                </ul>
                             </div>
                         </label>
                     </div>
@@ -43,25 +57,8 @@
         </div>
     </div>
 
-    <div class="card" id="modulesCard">
-        <div class="card-header"><h5 class="card-title mb-0">{{ __('2. Business modules') }}</h5></div>
-        <div class="card-body">
-            <p class="small text-muted">{{ __('Included in Business at no extra charge. Untick what you do not need; you can switch any of them on later in Settings. A module that another one needs is switched on with it.') }}</p>
-            <div class="row g-2">
-                @foreach ($modules as $key => $module)
-                    <div class="col-12 col-md-6">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="modules[]" id="module-{{ $key }}" value="{{ $key }}" @checked(in_array($key, $ticked, true))>
-                            <label class="form-check-label" for="module-{{ $key }}"><strong>{{ __($module['name']) }}</strong><span class="d-block small text-muted">{{ __($module['description']) }}</span></label>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
     <div class="card">
-        <div class="card-header"><h5 class="card-title mb-0">{{ __('3. Company details') }}</h5></div>
+        <div class="card-header"><h5 class="card-title mb-0">{{ __('2. Company details') }}</h5></div>
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-12 col-md-6">
@@ -112,18 +109,4 @@
     </div>
 </form>
 
-@push('scripts')
-<script>
-    // the module list belongs to Business only
-    (function () {
-        var card = document.getElementById('modulesCard');
-        function sync() {
-            var picked = document.querySelector('input[name="plan"]:checked');
-            card.hidden = !picked || picked.value !== 'business';
-        }
-        document.querySelectorAll('input[name="plan"]').forEach(function (radio) { radio.addEventListener('change', sync); });
-        sync();
-    })();
-</script>
-@endpush
 @endsection

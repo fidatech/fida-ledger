@@ -60,20 +60,25 @@ class IsolationTest extends TestCase
         $this->get('/dashboard')->assertRedirect(route('onboarding.create'));
     }
 
-    public function test_module_dependencies_are_kept_and_starter_cannot_switch_business_modules_on(): void
+    public function test_the_plan_decides_the_modules_and_a_company_cannot_change_them(): void
     {
-        $company = $this->activeCompany();
+        $business = $this->activeCompany();
+        $this->assertCount(7, Modules::activeKeys($business));
+        $this->get('/settings/modules')->assertOk()->assertSee('Included');
+        // there is nothing to submit: the page has no form and the address accepts no change
+        $this->put('/settings/modules', ['modules' => []])->assertStatus(405);
+        $this->assertCount(7, Modules::activeKeys($business->fresh()));
 
-        // Point of Sale needs Products, Sales and Inventory: they stay on with it
-        $this->put('/settings/modules', ['modules' => ['pos']])->assertSessionHas('success');
-        $this->assertEqualsCanonicalizing(['products', 'inventory', 'sales', 'pos'], Modules::activeKeys($company->fresh()));
+        // dependencies still hold where the platform sets modules: Point of Sale brings what it needs
+        Modules::set($business, ['pos']);
+        $this->assertEqualsCanonicalizing(['products', 'inventory', 'sales', 'pos'], Modules::activeKeys($business->fresh()));
 
-        $this->put('/settings/modules', ['modules' => []]);
-        $this->assertSame([], Modules::activeKeys($company->fresh()));
-
+        // Starter has none and is refused any
         $starter = $this->activeCompany('Solo', Plan::STARTER);
-        $this->put('/settings/modules', ['modules' => ['payroll']])->assertSessionHas('danger');
-        $this->assertSame([], Modules::activeKeys($starter->fresh()));
+        $this->assertSame([], Modules::activeKeys($starter));
+        $this->get('/settings/modules')->assertOk()->assertDontSee('Included');
+        $this->expectException(\App\Exceptions\UserError::class);
+        Modules::set($starter, ['payroll']);
     }
 
     public function test_money_in_through_the_screen_posts_once_and_shows_a_receipt(): void

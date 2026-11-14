@@ -28,7 +28,7 @@ class RegistrationTest extends TestCase
         $this->actingAs($this->user(), 'web');
 
         $this->post('/start', [
-            'plan' => 'business', 'modules' => array_keys(Modules::all()),
+            'plan' => 'business', 'modules' => ['payroll'], // a posted selection is ignored: the plan decides
             'name' => 'Acme Trading', 'type' => 'trading', 'base_currency' => 'AFN', 'timezone' => 'Asia/Kabul',
         ])->assertRedirect(route('billing.show'));
 

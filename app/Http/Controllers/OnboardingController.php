@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 /**
- * Opening a company: choose the version, the modules (Business) and the company details.
+ * Opening a company: choose the version (its modules come with it) and the company details.
  * Used right after registration and by "Add a company" in the company switcher.
  * The company starts pending and goes to its payment page.
  */
@@ -24,6 +24,8 @@ class OnboardingController extends Controller
         return view('onboarding.create', [
             'plans' => Plan::onOffer(),
             'modules' => Modules::all(),
+            // which plans include each Business module (set on the platform side)
+            'includes' => \App\Models\Module::where('is_available', true)->pluck('plans', 'key')->all(),
             'timezones' => DateTimeZone::listIdentifiers(),
             'first' => $request->user()->companies()->count() === 0,
         ]);
@@ -33,8 +35,6 @@ class OnboardingController extends Controller
     {
         $data = $request->validate([
             'plan' => ['required', Rule::exists('plans', 'code')->where('is_active', true)],
-            'modules' => ['nullable', 'array'],
-            'modules.*' => ['string', Rule::in(array_keys(Modules::all()))],
             'name' => ['required', 'string', 'max:150'],
             'type' => ['required', Rule::in(array_keys(config('ledger.company_types')))],
             'base_currency' => ['required', Rule::in(array_keys(config('ledger.currencies')))],
@@ -44,11 +44,8 @@ class OnboardingController extends Controller
         ]);
 
         $plan = Plan::where('code', $data['plan'])->firstOrFail();
-        $company = Companies::open($request->user(), [
-            'plan' => $plan,
-            // the checkboxes of the form: an empty list means the user unticked every module
-            'modules' => $plan->code === Plan::BUSINESS ? ($data['modules'] ?? []) : [],
-        ] + $data);
+        // the modules come with the version: Companies::open() switches on everything the plan includes
+        $company = Companies::open($request->user(), ['plan' => $plan] + $data);
 
         $request->session()->put('company_id', $company->id);
         AuditLog::record('opened company', $company->name, ['plan' => $plan->code], $company->id);
