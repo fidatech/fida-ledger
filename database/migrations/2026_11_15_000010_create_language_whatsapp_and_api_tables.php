@@ -8,10 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // the language a person reads the system in (English, Dari, Pashto)
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('locale', 5)->nullable();
-        });
+        // the language a person reads the system in is users.locale, which exists since the first migration
 
         // one WhatsApp connection (RelayWA) per company
         Schema::create('whatsapp_settings', function (Blueprint $table) {
@@ -60,8 +57,5 @@ return new class extends Migration
         Schema::dropIfExists('api_tokens');
         Schema::dropIfExists('whatsapp_messages');
         Schema::dropIfExists('whatsapp_settings');
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('locale');
-        });
     }
 };
