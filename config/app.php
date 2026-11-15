@@ -81,7 +81,7 @@ return [
     'locale' => env('APP_LOCALE', 'en'),
 
     // the languages a user can choose (English only for now; more are added here)
-    'locales' => ['en' => 'English'],
+    'locales' => ['en' => 'English', 'fa' => 'دری', 'ps' => 'پښتو'],
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

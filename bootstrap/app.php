@@ -7,6 +7,7 @@ use App\Http\Middleware\EnsureEmailVerified;
 use App\Http\Middleware\EnsureSubscribed;
 use App\Http\Middleware\RequireModule;
 use App\Http\Middleware\SetCompany;
+use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StripNumberCommas;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,6 +17,7 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -24,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn (Request $request) => $request->is('admin', 'admin/*') ? route('admin.login') : route('login'));
         $middleware->redirectUsersTo(fn (Request $request) => $request->is('admin', 'admin/*') ? route('admin.dashboard') : route('dashboard'));
 
-        $middleware->web(append: [StripNumberCommas::class]);
+        $middleware->web(append: [StripNumberCommas::class, SetLocale::class]);
         $middleware->alias([
             'company' => SetCompany::class,
             'subscribed' => EnsureSubscribed::class,

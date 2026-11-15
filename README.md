@@ -48,5 +48,9 @@ SQLite adds DECIMAL columns as floating point, so only the MySQL run proves the 
 | `app/Http/Middleware` | `company` (tenant context), `subscribed`, `module:<key>`, `can.do:<permission>` |
 | `config/ledger.php` | Chart of accounts, account kinds, Money In/Out kinds, roles |
 | `config/modules.php`, `config/billing.php` | The seven Business modules and their dependencies; plans and prices |
+| `app/WhatsApp`, `config/whatsapp.php` | WhatsApp through RelayWA: client, sending, message drafts |
+| `routes/api.php`, `app/Http/Middleware/ApiAuth.php` | The API (`/api/v1`) and its keys |
+| `lang/fa.json`, `lang/ps.json` | Dari and Pashto; `php tools/lang-check.php` shows the coverage |
+| `docs/USER-GUIDE.md`, `docs/ADMIN-GUIDE.md`, `docs/DEPLOYMENT.md`, `docs/API.md` | Guides |
 | `docs/ARCHITECTURE.md` | Design, module dependency map and the accounting policies chosen |
 | `docs/PROGRESS.md` | What is done, what is next, what is unverified |

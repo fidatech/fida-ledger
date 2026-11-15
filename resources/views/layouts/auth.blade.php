@@ -16,6 +16,7 @@
     </aside>
     <main class="auth-main">
         <div class="auth-tools">
+            @include('partials.language')
             <button class="topbar-icon" type="button" data-theme-toggle title="{{ __('app.nav.toggle_theme') }}"><x-icon name="moon" /></button>
         </div>
         <div class="auth-mobile-hero"><span class="amh-logo"><x-brand-logo :size="44" /></span><strong>{{ config('app.name') }}</strong><small>{{ __('app.auth.hero_kicker') }}</small></div>

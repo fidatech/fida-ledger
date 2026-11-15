@@ -9,6 +9,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="{{ url('/') }}" class="brand-link text-decoration-none d-flex align-items-center gap-2"><x-brand-logo :size="34" /><span class="fw-bold fs-5 text-body">{{ config('app.name') }}</span></a>
         <div class="d-flex align-items-center gap-2">
+            @include('partials.language')
             <button class="topbar-icon" type="button" data-theme-toggle title="{{ __('app.nav.toggle_theme') }}"><x-icon name="moon" /></button>
             <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="btn btn-sm btn-light-secondary"><x-icon name="right-from-bracket" class="me-1" /> {{ __('app.nav.sign_out') }}</button></form>
         </div>

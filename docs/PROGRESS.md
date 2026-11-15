@@ -113,6 +113,28 @@ Banking & Planning, for the Business version (hidden and refused for Starter):
   dashboard, system health.
 - Tests written: `tests/Feature/SecurityAdminTest`.
 
+## Built in stage 7 (written without being run)
+
+- **Languages.** English, Dari and Pashto with a switch in every header (saved on the user).
+  `lang/fa.json` and `lang/ps.json` hold 1,024 texts each: menus, buttons, titles, labels and
+  short messages. `php tools/lang-check.php` reports 82% covered; the ~215 texts left are long
+  explanations and error messages, which stay English. The translations were written by the
+  author of the code and have not been read by a native-speaking accountant: review the terms.
+  Dates and numbers are not localised (Gregorian dates, Latin digits).
+- **WhatsApp (RelayWA).** Per-company session key (encrypted), country code, editable message
+  texts, connection check, test message, a compose screen opened from invoices, Money In
+  receipts and accounts, and a message log. Paths and the Bearer header come from RelayWA's
+  own PHP SDK source; relaywa.com/api-docs itself could not be opened from where this was
+  written. Not verified against the live service: the shape of the session list and of the QR
+  answer (the page falls back to a plain notice). Not built: receiving webhooks (RelayWA's
+  signature format is not described in the SDK), delivery/read status, sending PDF files
+  (RelayWA wants a public HTTPS link and the system makes no PDF), automatic reminders.
+- **API.** `/api/v1` with the system's own hashed keys (Settings > API Access), not Sanctum:
+  Sanctum could not be installed or tested here. Read accounts, money, invoices, products and
+  a summary; record Money In / Out with an idempotency key. See `docs/API.md`.
+- **Documentation.** `docs/USER-GUIDE.md`, `docs/ADMIN-GUIDE.md`, `docs/DEPLOYMENT.md`, `docs/API.md`.
+- **Tests.** `tests/Feature/LanguageWhatsappApiTest.php` (RelayWA is faked; no message leaves the tests).
+
 ## Not built yet
 
 Inside the Business modules:
@@ -126,22 +148,21 @@ Inside the Business modules:
 
 Starter scope still missing:
 - A local mail viewer (emails go to the mail log locally); a QR code for two-factor setup (the key is typed in).
-- Invoice templates (one layout exists), invoice-level discount, WhatsApp sharing.
+- Invoice templates (one layout exists), invoice-level discount.
 - Money In/Out categories.
 - Monetary revaluation; FX difference on settling foreign receivables/payables.
 - Payables aging by bill (supplier payments are not matched to single bills).
 - PDF files made by the server (reports print through the browser, which can save a PDF).
-- Settings: custom roles, numbering sequences, branding, language, security, API access.
-- Dari and Pashto translations (the layout is RTL-ready; strings are English only).
+- Settings: custom roles, numbering sequences, branding.
+- Dari and Pashto for the long explanations and error messages (about 215 texts); localised dates and digits.
 - Scheduled reminders; bank statement formats other than CSV.
-- WhatsApp / RelayWA integration. The provider's API was not consulted yet.
-- Sanctum API.
+- WhatsApp: incoming webhooks, delivery status, PDF attachments, automatic reminders.
+- API: Sanctum itself; writing anything other than Money In / Out.
 
 Platform side still missing: promotions, a platform settings page, a background-jobs viewer,
 support access to a company's books (administrators cannot see them at all, by design).
 
-Deliverables not produced: user and super-admin documentation, deployment instructions,
-API documentation, source ZIP.
+Deliverable not produced: a source ZIP (the repository is the source).
 
 ## Suggested order for the next stages
 

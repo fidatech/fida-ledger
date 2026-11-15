@@ -66,6 +66,20 @@ if (! function_exists('module_on')) {
     }
 }
 
+if (! function_exists('whatsapp_on')) {
+    /** Can the signed-in user send WhatsApp messages for the current company? (connected, and his role allows it) */
+    function whatsapp_on(): bool
+    {
+        static $ready = [];
+        $company = company();
+        if ($company === null || ! can_do('whatsapp.send')) {
+            return false;
+        }
+
+        return $ready[$company->id] ??= \App\Models\WhatsappSetting::of($company)->isReady();
+    }
+}
+
 if (! function_exists('own')) {
     /** Validation rule: the chosen record must belong to the current company. */
     function own(string $table): Exists

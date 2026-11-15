@@ -42,6 +42,7 @@
             </ul>
         </div>
 
+        @include('partials.language')
         <button class="topbar-icon" type="button" data-theme-toggle title="{{ __('app.nav.toggle_theme') }}"><x-icon name="moon" /></button>
 
         <div class="dropdown">

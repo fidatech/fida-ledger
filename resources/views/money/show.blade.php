@@ -5,6 +5,9 @@
     $in = $direction === 'in';
 @endphp
 <x-page-header :title="($in ? __('Money In receipt') : __('Money Out receipt')).' '.$movement->code()" icon="receipt" :crumbs="[[$in ? __('Money In') : __('Money Out'), route('money.index', ['direction' => $direction])], [$movement->code()]]">
+    @if ($in && ! $movement->isVoid() && whatsapp_on())
+        <a class="btn btn-outline-soft" href="{{ route('whatsapp.compose', ['money' => $movement->id]) }}"><x-icon name="comment-dots" class="me-1" /> {{ __('WhatsApp') }}</a>
+    @endif
     <button type="button" class="btn btn-outline-soft" onclick="window.print()"><x-icon name="print" class="me-1" /> {{ __('Print') }}</button>
     @if ($movement->attachment_path)
         <a class="btn btn-outline-soft" href="{{ route('money.attachment', ['direction' => $direction, 'id' => $movement->id]) }}" target="_blank" rel="noopener"><x-icon name="paperclip" class="me-1" /> {{ __('Attachment') }}</a>

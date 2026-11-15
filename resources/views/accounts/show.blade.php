@@ -16,6 +16,9 @@
     @if (can_do('reports.export'))
         <a class="btn btn-outline-soft" href="{{ request()->fullUrlWithQuery(['export' => 'csv']) }}"><x-icon name="file-arrow-down" class="me-1" /> {{ __('Excel (CSV)') }}</a>
     @endif
+    @if (whatsapp_on())
+        <a class="btn btn-outline-soft" href="{{ route('whatsapp.compose', ['account' => $account->id]) }}"><x-icon name="comment-dots" class="me-1" /> {{ __('WhatsApp') }}</a>
+    @endif
     <button type="button" class="btn btn-outline-soft" onclick="window.print()"><x-icon name="print" class="me-1" /> {{ __('Print') }}</button>
 </x-page-header>
 

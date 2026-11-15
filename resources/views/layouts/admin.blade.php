@@ -54,6 +54,7 @@
             <div class="appbar-title" id="appbarTitle">{{ $title ?? config('app.name') }}</div>
             <div class="topbar-brand" aria-hidden="true">{{ __('System administration') }}</div>
             <div class="topbar-right">
+                @include('partials.language')
                 <button class="topbar-icon" type="button" data-theme-toggle title="{{ __('app.nav.toggle_theme') }}"><x-icon name="moon" /></button>
                 <div class="dropdown">
                     <button class="topbar-user" data-bs-toggle="dropdown" type="button" aria-expanded="false">

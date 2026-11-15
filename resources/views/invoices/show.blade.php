@@ -18,6 +18,9 @@
     @if (\App\Support\Dec::isPositive($invoice->due()) && can_do('money.create'))
         <a class="btn btn-success" href="{{ route('money.create', ['direction' => 'in', 'invoice' => $invoice->id]) }}"><x-icon name="arrow-down" class="me-1" /> {{ __('Receive payment') }}</a>
     @endif
+    @if ($invoice->status === 'issued' && whatsapp_on())
+        <a class="btn btn-outline-soft" href="{{ route('whatsapp.compose', ['invoice' => $invoice->id]) }}"><x-icon name="comment-dots" class="me-1" /> {{ __('WhatsApp') }}</a>
+    @endif
     <button type="button" class="btn btn-outline-soft" onclick="window.print()"><x-icon name="print" class="me-1" /> {{ __('Print') }}</button>
     @if ($invoice->status !== 'void' && $manage)
         <form method="POST" action="{{ route('invoices.void', ['id' => $invoice->id]) }}" class="d-inline" data-confirm="{{ __('Cancel :code?', ['code' => $invoice->code()]) }}" data-confirm-text="{{ __('Its journal entry is reversed. The document stays in the list, marked cancelled.') }}" data-confirm-ok="{{ __('Yes, cancel it') }}">@csrf

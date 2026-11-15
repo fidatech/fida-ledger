@@ -33,6 +33,9 @@ Route::pattern('doc', 'quotation|order');
 
 Route::redirect('/', '/dashboard');
 
+// the language switch: works signed in or not
+Route::post('/locale', App\Http\Controllers\LocaleController::class)->name('locale');
+
 /* ------------------------------------------------------------------ sign-in and registration */
 
 Route::middleware('guest:web')->group(function () {
@@ -325,6 +328,12 @@ Route::middleware('auth:web')->group(function () {
                 Route::get('/reports/{report}', ReportBookController::class)->whereIn('report', array_keys(ReportBookController::REPORTS))->name('reports.show');
             });
 
+            // WhatsApp: write and send a message about an invoice, a receipt or an account
+            Route::middleware('can.do:whatsapp.send')->group(function () {
+                Route::get('/whatsapp/compose', [Settings\WhatsAppController::class, 'compose'])->name('whatsapp.compose');
+                Route::post('/whatsapp/send', [Settings\WhatsAppController::class, 'send'])->middleware('throttle:30,1')->name('whatsapp.send');
+            });
+
             // Settings
             Route::middleware('can.do:settings.manage')->group(function () {
                 Route::get('/settings/modules', [Settings\ModuleController::class, 'edit'])->name('settings.modules');
@@ -336,6 +345,15 @@ Route::middleware('auth:web')->group(function () {
                 Route::get('/settings/users', [Settings\MemberController::class, 'index'])->name('settings.users');
                 Route::post('/settings/users', [Settings\MemberController::class, 'store'])->name('settings.users.store');
                 Route::put('/settings/users/{id}', [Settings\MemberController::class, 'update'])->whereNumber('id')->name('settings.users.update');
+                Route::get('/settings/whatsapp', [Settings\WhatsAppController::class, 'index'])->name('whatsapp.index');
+                Route::put('/settings/whatsapp', [Settings\WhatsAppController::class, 'update'])->name('whatsapp.update');
+                Route::delete('/settings/whatsapp/key', [Settings\WhatsAppController::class, 'forget'])->name('whatsapp.forget');
+                Route::post('/settings/whatsapp/check', [Settings\WhatsAppController::class, 'check'])->middleware('throttle:20,1')->name('whatsapp.check');
+                Route::post('/settings/whatsapp/session', [Settings\WhatsAppController::class, 'session'])->middleware('throttle:20,1')->name('whatsapp.session');
+                Route::post('/settings/whatsapp/test', [Settings\WhatsAppController::class, 'test'])->middleware('throttle:10,1')->name('whatsapp.test');
+                Route::get('/settings/api', [Settings\ApiTokenController::class, 'index'])->name('settings.api');
+                Route::post('/settings/api', [Settings\ApiTokenController::class, 'store'])->middleware('throttle:10,1')->name('settings.api.store');
+                Route::delete('/settings/api/{id}', [Settings\ApiTokenController::class, 'destroy'])->whereNumber('id')->name('settings.api.destroy');
                 Route::get('/settings/currencies', [Settings\CurrencyController::class, 'index'])->name('settings.currencies');
                 Route::post('/settings/currencies', [Settings\CurrencyController::class, 'store'])->name('settings.currencies.store');
                 Route::post('/settings/currencies/{id}/toggle', [Settings\CurrencyController::class, 'toggle'])->whereNumber('id')->name('settings.currencies.toggle');

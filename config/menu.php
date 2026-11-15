@@ -99,6 +99,8 @@ return [
         ['label' => 'Users & Roles', 'route' => 'settings.users', 'can' => 'settings.manage'],
         ['label' => 'Modules', 'route' => 'settings.modules', 'can' => 'settings.manage'],
         ['label' => 'Currencies', 'route' => 'settings.currencies', 'can' => 'settings.manage'],
+        ['label' => 'WhatsApp', 'route' => 'whatsapp.index', 'active' => 'whatsapp.*', 'can' => 'settings.manage'],
+        ['label' => 'API Access', 'route' => 'settings.api', 'can' => 'settings.manage'],
         ['label' => 'Subscription & Billing', 'route' => 'billing.show'],
     ]],
 ];
