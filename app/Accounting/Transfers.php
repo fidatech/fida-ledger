@@ -71,7 +71,7 @@ class Transfers
             } elseif ($fromCurrency === $base) {
                 $toBase = $fromAmount; // bought with base currency: it comes in at what was paid
             } else {
-                $toRate = Dec::valid($data['to_rate'] ?? null) && Dec::isPositive($data['to_rate']) ? $data['to_rate'] : ExchangeRate::on($company, $toCurrency, $date);
+                $toRate = Dec::valid($data['to_rate'] ?? null) && Dec::isPositive($data['to_rate']) ? $data['to_rate'] : ExchangeRate::rateOn($company, $toCurrency, $date);
                 if ($toRate === null || ! Dec::isPositive($toRate)) {
                     throw new UserError(__('Enter the exchange rate of :currency.', ['currency' => $toCurrency]));
                 }
@@ -142,7 +142,7 @@ class Transfers
             return Dec::div(Dec::mul($held['base'], $amount, 12), $balance);
         }
 
-        $rate = ExchangeRate::on($company, $currency, $date);
+        $rate = ExchangeRate::rateOn($company, $currency, $date);
         if ($rate === null || ! Dec::isPositive($rate)) {
             throw new UserError(__(':account does not hold this much. Enter today\'s rate of :currency under Exchange Rates first.', ['account' => $account->name, 'currency' => $currency]));
         }

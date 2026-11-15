@@ -68,7 +68,7 @@ class Money
             if ($currency !== $company->base_currency) {
                 $rate = Dec::valid($data['rate'] ?? null) && Dec::isPositive($data['rate'])
                     ? Dec::round($data['rate'], (int) config('ledger.rate_scale'))
-                    : ExchangeRate::on($company, $currency, $date);
+                    : ExchangeRate::rateOn($company, $currency, $date);
                 if ($rate === null || ! Dec::isPositive($rate)) {
                     throw new UserError(__('Enter the exchange rate of :currency.', ['currency' => $currency]));
                 }

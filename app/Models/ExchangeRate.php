@@ -18,7 +18,7 @@ class ExchangeRate extends Model
     }
 
     /** The latest rate on or before a day, or null when none was ever entered. */
-    public static function on(Company $company, string $currency, string $date): ?string
+    public static function rateOn(Company $company, string $currency, string $date): ?string
     {
         if ($currency === $company->base_currency) {
             return '1';

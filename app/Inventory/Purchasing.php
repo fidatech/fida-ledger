@@ -88,7 +88,7 @@ class Purchasing
             $company = Company::findOrFail($order->company_id);
             $rate = '1';
             if ($order->currency !== $company->base_currency) {
-                $rate = Dec::isPositive($order->rate) ? $order->rate : ExchangeRate::on($company, $order->currency, $order->date->toDateString());
+                $rate = Dec::isPositive($order->rate) ? $order->rate : ExchangeRate::rateOn($company, $order->currency, $order->date->toDateString());
                 if ($rate === null || ! Dec::isPositive($rate)) {
                     throw new UserError(__('Enter the exchange rate of :currency.', ['currency' => $order->currency]));
                 }

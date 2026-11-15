@@ -124,7 +124,7 @@ class Invoices
 
             $rate = '1';
             if ($invoice->currency !== $company->base_currency) {
-                $rate = Dec::isPositive($invoice->rate) ? $invoice->rate : ExchangeRate::on($company, $invoice->currency, $date);
+                $rate = Dec::isPositive($invoice->rate) ? $invoice->rate : ExchangeRate::rateOn($company, $invoice->currency, $date);
                 if ($rate === null || ! Dec::isPositive($rate)) {
                     throw new UserError(__('Enter the exchange rate of :currency.', ['currency' => $invoice->currency]));
                 }
