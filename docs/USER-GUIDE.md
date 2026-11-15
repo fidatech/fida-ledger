@@ -67,5 +67,5 @@ country code.
 
 ## Languages
 
-Menus, buttons, titles and short messages are in Dari and Pashto (about 8 in 10 texts). Longer
-explanations and some error messages are still shown in English.
+The whole interface is in English, Dari and Pashto. Dates are Gregorian and digits are Latin
+in every language. A few built-in form messages ("The name field is required") are English.

@@ -116,9 +116,8 @@ Banking & Planning, for the Business version (hidden and refused for Starter):
 ## Built in stage 7 (written without being run)
 
 - **Languages.** English, Dari and Pashto with a switch in every header (saved on the user).
-  `lang/fa.json` and `lang/ps.json` hold 1,024 texts each: menus, buttons, titles, labels and
-  short messages. `php tools/lang-check.php` reports 82% covered; the ~215 texts left are long
-  explanations and error messages, which stay English. The translations were written by the
+  `lang/fa.json` and `lang/ps.json` hold every interface text (about 1,240 each);
+  `php tools/lang-check.php` reports 100%. The translations were written by the
   author of the code and have not been read by a native-speaking accountant: review the terms.
   Dates and numbers are not localised (Gregorian dates, Latin digits).
 - **WhatsApp (RelayWA).** Per-company session key (encrypted), country code, editable message
@@ -154,7 +153,7 @@ Starter scope still missing:
 - Payables aging by bill (supplier payments are not matched to single bills).
 - PDF files made by the server (reports print through the browser, which can save a PDF).
 - Settings: custom roles, numbering sequences, branding.
-- Dari and Pashto for the long explanations and error messages (about 215 texts); localised dates and digits.
+- Localised dates and digits (dates are Gregorian, digits Latin); Laravel's own validation messages ("The name field is required") are English.
 - Scheduled reminders; bank statement formats other than CSV.
 - WhatsApp: incoming webhooks, delivery status, PDF attachments, automatic reminders.
 - API: Sanctum itself; writing anything other than Money In / Out.
