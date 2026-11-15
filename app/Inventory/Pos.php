@@ -41,7 +41,7 @@ class Pos
             if (PosSession::withoutGlobalScope('company')->where('pos_register_id', $register->id)->where('status', 'open')->exists()) {
                 throw new UserError(__('This register is already open.'));
             }
-            $session = new PosSession(['pos_register_id' => $register->id, 'user_id' => auth('web')->id(), 'opened_at' => now(), 'opening_cash' => Dec::round($openingCash ?? '0')]);
+            $session = new PosSession(['status' => 'open', 'pos_register_id' => $register->id, 'user_id' => auth('web')->id(), 'opened_at' => now(), 'opening_cash' => Dec::round($openingCash ?? '0')]);
             $session->company_id = $register->company_id;
             $session->save();
 

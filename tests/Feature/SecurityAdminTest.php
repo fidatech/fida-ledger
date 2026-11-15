@@ -70,8 +70,9 @@ class SecurityAdminTest extends TestCase
 
     public function test_switching_two_factor_off_and_changing_the_password_need_the_current_password(): void
     {
-        $company = $this->activeCompany();
-        $user = $company->users()->first();
+        $this->activeCompany();
+        // the signed-in user himself: a second copy of the record would leave his copy out of date
+        $user = auth('web')->user();
         $user->forceFill(['two_factor_secret' => Totp::secret(), 'two_factor_confirmed_at' => now()])->save();
 
         $this->delete('/profile/two-factor', ['current_password' => 'wrong'])->assertSessionHasErrors('current_password');

@@ -15,6 +15,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $guarded = [];
 
+    /** A new user is switched on, also before the record is read back from the database. */
+    protected $attributes = ['is_active' => true];
+
     protected $hidden = ['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'];
 
     protected function casts(): array

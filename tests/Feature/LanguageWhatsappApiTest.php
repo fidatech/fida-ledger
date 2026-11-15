@@ -117,7 +117,10 @@ class LanguageWhatsappApiTest extends TestCase
 
         $headers = ['Authorization' => 'Bearer '.$key];
         $this->getJson('/api/v1/me', $headers)->assertOk()->assertJsonPath('company.id', $company->id);
-        $this->getJson('/api/v1/accounts', $headers)->assertOk()->assertJsonMissing(['id' => $foreign->id, 'code' => $foreign->code, 'name' => $foreign->name, 'class' => $foreign->class, 'kind' => $foreign->kind]);
+        $mine = \App\Models\Account::withoutGlobalScope('company')->where('company_id', $company->id)->pluck('id')->all();
+        $listed = $this->getJson('/api/v1/accounts?per_page=100', $headers)->assertOk()->json('data');
+        $this->assertNotEmpty($listed);
+        $this->assertSame([], array_diff(array_column($listed, 'id'), $mine));
         $this->getJson('/api/v1/accounts/'.$foreign->id, $headers)->assertNotFound();
     }
 

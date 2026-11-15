@@ -122,7 +122,7 @@ class BankingTest extends TestCase
         $this->assertSame('-3200.0000', Balances::profit($company, null, null));
 
         // a transaction that cannot be posted keeps its error and blocks nothing else
-        $bad = RecurringTransaction::create($base + ['name' => 'Broken', 'amount' => '10', 'next_run' => '2026-11-01', 'kind' => 'supplier_payment']); // an expense account is not a supplier
+        $bad = RecurringTransaction::create(['kind' => 'supplier_payment', 'name' => 'Broken', 'amount' => '10', 'next_run' => '2026-11-01'] + $base); // an expense account is not a supplier
         $this->post('/recurring/run')->assertSessionHas('warning');
         $this->assertNotNull($bad->fresh()->last_error);
         $this->assertSame(0, MoneyMovement::where('reference', 'REC-'.$bad->id)->count());
