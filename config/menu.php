@@ -45,7 +45,9 @@ return [
 
     ['heading' => 'Business Operations'],
     ['label' => 'Products', 'icon' => 'boxes-stacked', 'module' => 'products', 'can' => 'products.view', 'children' => [
-        ['label' => 'All Products', 'route' => 'products.index', 'params' => ['type' => 'product'], 'active' => 'products.*'],
+        ['label' => 'All Products', 'route' => 'products.index', 'params' => ['type' => 'product'], 'active' => ['products.index', 'products.create', 'products.edit']],
+        ['label' => 'Import Products', 'route' => 'products.import', 'can' => 'products.manage'],
+        ['label' => 'Barcode Labels', 'route' => 'products.labels'],
         ['label' => 'Categories', 'route' => 'product-categories.index', 'active' => 'product-categories.*'],
         ['label' => 'Units', 'route' => 'units.index', 'active' => 'units.*'],
     ]],
@@ -58,7 +60,7 @@ return [
         ['label' => 'Stock Movements', 'route' => 'inventory.movements'],
         ['label' => 'Stock Transfers', 'route' => 'inventory.change', 'params' => ['mode' => 'transfer'], 'can' => 'inventory.manage'],
         ['label' => 'Stock Adjustments', 'route' => 'inventory.change', 'params' => ['mode' => 'adjust'], 'can' => 'inventory.manage'],
-        ['label' => 'Physical Stock Counts', 'route' => 'inventory.change', 'params' => ['mode' => 'count'], 'can' => 'inventory.manage'],
+        ['label' => 'Physical Stock Counts', 'route' => 'inventory.count-sheet', 'can' => 'inventory.manage'],
         ['label' => 'Warehouses', 'route' => 'warehouses.index', 'active' => 'warehouses.*'],
     ]],
     ['label' => 'Sales Management', 'icon' => 'file-signature', 'module' => 'sales', 'can' => 'sales.view', 'children' => [

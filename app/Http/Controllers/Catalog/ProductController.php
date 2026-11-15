@@ -94,6 +94,8 @@ class ProductController extends CrudController
     protected function headerLinks(Request $request): array
     {
         return [
+            ...(can_do('products.manage') ? [['label' => __('Import'), 'url' => route('products.import')]] : []),
+            ['label' => __('Barcode Labels'), 'url' => route('products.labels')],
             ['label' => __('Categories'), 'url' => route('product-categories.index')],
             ['label' => __('Units'), 'url' => route('units.index')],
         ];

@@ -38,6 +38,16 @@ Sale (registers, cashier sessions, cash count), Fixed Assets (monthly straight-l
 depreciation, disposal), Payroll (employees, advances, monthly run, payslips), and Banking &
 Planning (bank reconciliation from CSV, budgets, recurring Money In / Out).
 
+### Tools for a products business
+
+- **Import Products** (Products > Import Products): save your Excel list as CSV and upload it.
+  Download the example file for the column names. Rows that match an existing code are
+  updated; new rows are added, with their opening stock if you choose a warehouse.
+- **Physical Stock Counts** (Inventory): print the sheet, count, type the numbers, save. Boxes
+  left empty are not changed.
+- **Barcode Labels** (Products): type how many labels each product needs and print. A product
+  needs a barcode or a code in Latin letters and digits.
+
 ## Settings
 
 - **Company Profile:** details, time zone, period lock, year-end closing.

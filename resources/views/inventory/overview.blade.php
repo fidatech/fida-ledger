@@ -7,7 +7,7 @@
     @endif
     @if (can_do('inventory.manage'))
         <a class="btn btn-outline-soft" href="{{ route('inventory.change', ['mode' => 'transfer']) }}"><x-icon name="right-left" class="me-1" /> {{ __('Stock Transfer') }}</a>
-        <a class="btn btn-outline-soft" href="{{ route('inventory.change', ['mode' => 'count']) }}"><x-icon name="clipboard-check" class="me-1" /> {{ __('Physical Count') }}</a>
+        <a class="btn btn-outline-soft" href="{{ route('inventory.count-sheet') }}"><x-icon name="clipboard-check" class="me-1" /> {{ __('Physical Count') }}</a>
         <a class="btn btn-primary" href="{{ route('inventory.change', ['mode' => 'adjust']) }}"><x-icon name="plus" class="me-1" /> {{ __('Stock Adjustment') }}</a>
     @endif
 </x-page-header>

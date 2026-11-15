@@ -134,12 +134,25 @@ Banking & Planning, for the Business version (hidden and refused for Starter):
 - **Documentation.** `docs/USER-GUIDE.md`, `docs/ADMIN-GUIDE.md`, `docs/DEPLOYMENT.md`, `docs/API.md`.
 - **Tests.** `tests/Feature/LanguageWhatsappApiTest.php` (RelayWA is faked; no message leaves the tests).
 
+## Built in stage 8 (written without being run, except the barcode maths)
+
+- The services list was removed: the catalogue holds products only (existing services became
+  products that are not kept in stock).
+- **Import Products** (`/products/import`): a CSV file adds or updates products, creates the
+  categories and units it names, and enters opening stock for new products. All or nothing.
+- **Physical Stock Count** (`/inventory/count-sheet`): one sheet per warehouse, 200 products a
+  page, printable empty; only the products with a typed count are adjusted.
+- **Barcode Labels** (`/products/labels`): Code 128 labels with name, code and price, 2 to 5 in
+  a row. The bar patterns were checked here against an independent Code 128 implementation;
+  the labels were not printed or scanned.
+- Tests: `tests/Feature/ProductToolsTest.php`.
+
 ## Not built yet
 
 Inside the Business modules:
-- Products: variants, price lists, barcode label printing, product images.
+- Products: variants, price lists, product images; EAN-13 barcodes (labels are Code 128).
 - Purchasing: requisitions, landed costs, bills at a price different from the order, tax on purchases.
-- Inventory: bin locations, batch/lot tracking, a multi-line count sheet (counts are per product).
+- Inventory: bin locations, batch/lot tracking.
 - Sales: sales reports beyond the lists; delivery note print layout uses the order page.
 - POS: partial refunds, held carts, receipt printer formatting, offline mode, foreign-currency sales.
 - Fixed Assets: depreciation methods other than straight line; asset reports.

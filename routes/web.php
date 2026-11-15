@@ -136,6 +136,13 @@ Route::middleware('auth:web')->group(function () {
 
             // Products (Business module "products"): the list for those who may see it, changes for those who may manage
             Route::middleware('module:products')->group(function () {
+                // tools: bring products in from a file, print barcode labels
+                Route::get('/products/labels', [Catalog\ProductToolsController::class, 'labels'])->middleware('can.do:products.view')->name('products.labels');
+                Route::middleware('can.do:products.manage')->group(function () {
+                    Route::get('/products/import', [Catalog\ProductToolsController::class, 'importForm'])->name('products.import');
+                    Route::post('/products/import', [Catalog\ProductToolsController::class, 'import'])->middleware('throttle:10,1')->name('products.import.store');
+                    Route::get('/products/import/template', [Catalog\ProductToolsController::class, 'template'])->name('products.import.template');
+                });
                 $screens = [
                     ['/products/{type}', Catalog\ProductController::class, 'products'],
                     ['/product-categories', Catalog\CategoryController::class, 'product-categories'],
@@ -163,6 +170,8 @@ Route::middleware('auth:web')->group(function () {
                 Route::middleware('can.do:inventory.manage')->group(function () {
                     Route::get('/inventory/change', [Inventory\InventoryController::class, 'change'])->name('inventory.change');
                     Route::post('/inventory/change', [Inventory\InventoryController::class, 'store'])->name('inventory.store');
+                    Route::get('/inventory/count-sheet', [Inventory\InventoryController::class, 'countSheet'])->name('inventory.count-sheet');
+                    Route::post('/inventory/count-sheet', [Inventory\InventoryController::class, 'countSheetStore'])->name('inventory.count-sheet.store');
                     Route::get('/warehouses/create', [Inventory\WarehouseController::class, 'create'])->name('warehouses.create');
                     Route::post('/warehouses', [Inventory\WarehouseController::class, 'store'])->name('warehouses.store');
                     Route::get('/warehouses/{id}/edit', [Inventory\WarehouseController::class, 'edit'])->whereNumber('id')->name('warehouses.edit');

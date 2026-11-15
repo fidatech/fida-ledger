@@ -124,4 +124,61 @@ class InventoryController extends Controller
 
         return redirect()->route('inventory.movements', ['product' => $product->id])->with('success', __('Stock updated.'));
     }
+
+    /**
+     * The count sheet: every stocked product of one warehouse with what the books say, and a
+     * box for what was counted. Printed empty it is the paper the counters walk around with.
+     */
+    public function countSheet(Request $request): View
+    {
+        $company = company();
+        Stock::defaultWarehouse($company);
+        $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
+        $warehouse = $warehouses->firstWhere('id', $request->integer('warehouse')) ?? $warehouses->first();
+
+        // 200 products a page: a form of thousands of boxes would be cut off by the server
+        $products = Product::with('unit')->where('type', Product::PRODUCT)->where('track_stock', true)->where('is_active', true)
+            ->when($request->integer('category'), fn ($q, $id) => $q->where('product_category_id', $id))
+            ->orderBy('name')->paginate(200)->withQueryString();
+
+        return view('inventory.count-sheet', [
+            'warehouses' => $warehouses,
+            'warehouse' => $warehouse,
+            'products' => $products,
+            'categories' => \App\Models\ProductCategory::orderBy('name')->get(),
+            'levels' => StockLevel::where('warehouse_id', $warehouse->id)->whereIn('product_id', $products->pluck('id'))->pluck('quantity', 'product_id'),
+        ]);
+    }
+
+    /** Adjust every product whose count was typed in. Boxes left empty are not touched. */
+    public function countSheetStore(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'warehouse_id' => ['required', 'integer', own('warehouses')],
+            'date' => ['required', 'date_format:Y-m-d'],
+            'reason' => ['nullable', 'string', 'max:200'],
+            'counted' => ['nullable', 'array', 'max:200'],
+            'counted.*' => ['nullable', 'numeric', 'min:0'],
+        ]);
+        $company = company();
+        $counted = array_filter($data['counted'] ?? [], fn ($value) => $value !== null && $value !== '');
+        $products = Product::where('type', Product::PRODUCT)->where('track_stock', true)->whereIn('id', array_keys($counted))->get();
+
+        $changed = DB::transaction(function () use ($data, $company, $counted, $products) {
+            $changed = 0;
+            foreach ($products as $product) {
+                $onHand = StockLevel::where('product_id', $product->id)->where('warehouse_id', $data['warehouse_id'])->lockForUpdate()->value('quantity') ?? '0';
+                $change = Dec::sub($counted[$product->id], $onHand);
+                if (Stock::adjust($company, $product, (int) $data['warehouse_id'], $change, $product->purchase_price, $data['date'], $data['reason'] ?? __('Physical count'))) {
+                    $changed++;
+                }
+            }
+
+            return $changed;
+        });
+        \App\Models\AuditLog::record('stock count', $changed.' products adjusted');
+
+        return redirect()->route('inventory.count-sheet', ['warehouse' => $data['warehouse_id']])
+            ->with('success', __(':counted products counted, :changed adjusted.', ['counted' => count($products), 'changed' => $changed]));
+    }
 }
