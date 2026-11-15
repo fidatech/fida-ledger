@@ -64,11 +64,11 @@ class SettingsTest extends TestCase
         $this->get('/products/product')->assertOk();
         $this->post('/units', ['name' => 'Piece', 'symbol' => 'pc'])->assertRedirect();
         $this->post('/products/product', ['name' => 'Laptop', 'sku' => 'LP-1', 'sale_price' => '45,000', 'track_stock' => 1, 'is_active' => 1])->assertRedirect();
-        $this->post('/products/service', ['name' => 'Installation', 'sale_price' => '500', 'track_stock' => 1, 'is_active' => 1])->assertRedirect();
+        $this->post('/products/product', ['name' => 'Installation', 'sale_price' => '500', 'is_active' => 1])->assertRedirect();
 
         $this->assertTrue(Product::where('name', 'Laptop')->firstOrFail()->isStocked());
-        $this->assertFalse(Product::where('name', 'Installation')->firstOrFail()->isStocked()); // a service never moves stock
-        $this->get('/products/service')->assertOk()->assertSee('Installation')->assertDontSee('Laptop');
+        $this->assertFalse(Product::where('name', 'Installation')->firstOrFail()->isStocked()); // "keep stock" was left off
+        $this->get('/products/service')->assertNotFound(); // there is no services list
         $this->get('/invoices/create')->assertOk();
 
         // switched off: the screens are gone, the records are kept

@@ -190,7 +190,7 @@ class ReportBookController extends Controller
 
         return [
             'title' => __('Product Sales'), 'icon' => 'chart-column', 'subtitle' => __('What was invoiced, less credit notes'), 'dates' => 'range',
-            'headings' => [[__('Product or service'), null], [__('Currency'), null], [__('Quantity'), 'end'], [__('Net amount'), 'end']],
+            'headings' => [[__('Product'), null], [__('Currency'), null], [__('Quantity'), 'end'], [__('Net amount'), 'end']],
             'rows' => $rows->map(fn ($row) => [$row->name, $row->currency, Stock::qty($row->quantity), money($row->net)])->all(),
             'footer' => [__('Total'), '', '', sums($totals)],
         ];

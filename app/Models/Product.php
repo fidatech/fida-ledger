@@ -6,13 +6,12 @@ use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** One entry of the catalogue: a product or a service. The same catalogue serves invoices, purchasing, stock and POS. */
+/** One entry of the catalogue: a product. The same catalogue serves invoices, purchasing, stock and POS. */
 class Product extends Model
 {
     use BelongsToCompany;
 
     public const PRODUCT = 'product';
-    public const SERVICE = 'service';
 
     protected $guarded = [];
 

@@ -26,8 +26,8 @@ use App\Http\Controllers\Settings;
 use App\Http\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
 
-// {type} in /products/{type} is "product" or "service"
-Route::pattern('type', 'product|service');
+// {type} in /products/{type} is always "product": the system is for businesses that sell products
+Route::pattern('type', 'product');
 // {doc} in /sales/{doc} is "quotation" or "order"
 Route::pattern('doc', 'quotation|order');
 
@@ -134,7 +134,7 @@ Route::middleware('auth:web')->group(function () {
                 Route::post('/invoices/{id}/void', [InvoiceController::class, 'void'])->whereNumber('id')->name('invoices.void');
             });
 
-            // Products & Services (Business module "products"): the list for those who may see it, changes for those who may manage
+            // Products (Business module "products"): the list for those who may see it, changes for those who may manage
             Route::middleware('module:products')->group(function () {
                 $screens = [
                     ['/products/{type}', Catalog\ProductController::class, 'products'],

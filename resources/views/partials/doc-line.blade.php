@@ -1,6 +1,6 @@
 <tr>
     <td>
-        <select class="form-select form-select-sm" name="lines[{{ $i }}][product_id]" data-product data-plain aria-label="{{ __('Product or service') }}">
+        <select class="form-select form-select-sm" name="lines[{{ $i }}][product_id]" data-product data-plain aria-label="{{ __('Product') }}">
             <option value="">—</option>
             @foreach ($products as $product)
                 <option value="{{ $product->id }}" data-description="{{ $product->name }}" data-unit_price="{{ $num($product->{$priceField}) }}" data-tax_rate="{{ $selling ? $num($product->tax_rate) : '' }}" data-income_account_id="{{ $selling ? $product->income_account_id : '' }}" @selected((int) $line['product_id'] === $product->id)>{{ $product->name }}{{ $product->sku ? ' · '.$product->sku : '' }}</option>

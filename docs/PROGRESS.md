@@ -42,7 +42,7 @@ output is committed. The first job on a machine with PHP 8.3+/bcmath, Composer a
 
 - Invoicing: drafts, issue, credit notes, cancel by reversal, printable document, list with
   status filters, "Receive payment" through Money In with allocation (part and full payment).
-- Products & Services module (the first Business module): products, services, categories,
+- Products module (the first Business module; the services list was removed later): products, categories,
   units, SKU, barcode, prices, tax rate, stock flag, reorder level; invoice lines can pick from it.
   The module's screens exist only while the module is switched on.
 - Settings: company profile and accounting period lock, users & roles (add, change role,

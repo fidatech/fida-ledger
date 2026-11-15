@@ -36,7 +36,7 @@
                         @endforeach
                     </div>
                     @if ($products->isEmpty())
-                        <p class="text-muted mb-0">{{ __('There are no products yet. Add them under Products & Services.') }}</p>
+                        <p class="text-muted mb-0">{{ __('There are no products yet. Add them under Products.') }}</p>
                     @endif
                 </div>
             </div>

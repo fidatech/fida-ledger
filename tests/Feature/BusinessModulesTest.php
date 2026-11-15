@@ -63,7 +63,7 @@ class BusinessModulesTest extends TestCase
         $company = $this->activeCompany();
         $supplier = Chart::open($company, ['kind' => 'supplier', 'name' => 'Kabul Traders']);
         $laptop = $this->product();
-        $delivery = Product::create(['type' => 'service', 'name' => 'Delivery', 'track_stock' => false]);
+        $delivery = Product::create(['type' => 'product', 'name' => 'Delivery', 'track_stock' => false]);
 
         $order = Purchasing::save($company, ['supplier_account_id' => $supplier->id, 'date' => '2026-11-15', 'currency' => 'AFN', 'lines' => [
             ['product_id' => $laptop->id, 'description' => 'Laptop', 'quantity' => '10', 'unit_price' => '100'],

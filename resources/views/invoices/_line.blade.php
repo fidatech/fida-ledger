@@ -5,7 +5,7 @@
 <tr>
     @if ($products->isNotEmpty())
         <td>
-            <select class="form-select form-select-sm" name="lines[{{ $i }}][product_id]" data-product data-plain aria-label="{{ __('Product or service') }}">
+            <select class="form-select form-select-sm" name="lines[{{ $i }}][product_id]" data-product data-plain aria-label="{{ __('Product') }}">
                 <option value="">—</option>
                 @foreach ($products as $product)
                     <option value="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $show($product->sale_price) }}" data-tax="{{ $show($product->tax_rate) }}" data-income="{{ $product->income_account_id }}" @selected((int) $line['product_id'] === $product->id)>{{ $product->name }}</option>

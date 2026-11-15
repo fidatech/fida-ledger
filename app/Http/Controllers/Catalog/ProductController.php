@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-/** The catalogue. /products/product lists products, /products/service lists services. */
+/** The catalogue of products (/products/product). */
 class ProductController extends CrudController
 {
     protected string $model = Product::class;
@@ -33,18 +33,7 @@ class ProductController extends CrudController
 
     private function type(): string
     {
-        return request()->route('type') === Product::SERVICE ? Product::SERVICE : Product::PRODUCT;
-    }
-
-    public function callAction($method, $parameters)
-    {
-        if ($this->type() === Product::SERVICE) {
-            $this->title = 'Services';
-            $this->singular = 'Service';
-            $this->icon = 'screwdriver-wrench';
-        }
-
-        return parent::callAction($method, $parameters);
+        return Product::PRODUCT;
     }
 
     protected function routeParams(): array
@@ -59,7 +48,6 @@ class ProductController extends CrudController
 
     protected function fields(?Model $record): array
     {
-        $service = $this->type() === Product::SERVICE;
         $fields = [
             ['name' => 'name', 'label' => 'Name', 'rules' => ['required', 'string', 'max:255']],
             ['name' => 'sku', 'label' => 'Code (SKU)', 'col' => 3, 'rules' => ['nullable', 'string', 'max:60', Rule::unique('products', 'sku')->where('company_id', company_id())->ignore($record?->getKey())]],
@@ -71,10 +59,8 @@ class ProductController extends CrudController
             ['name' => 'purchase_price', 'label' => 'Purchase price', 'type' => 'decimal', 'col' => 3, 'rules' => ['nullable', 'numeric', 'min:0'], 'default' => '0'],
             ['name' => 'tax_rate', 'label' => 'Tax %', 'type' => 'decimal', 'col' => 3, 'rules' => ['nullable', 'numeric', 'min:0', 'max:100'], 'default' => '0'],
         ];
-        if (! $service) {
-            $fields[] = ['name' => 'reorder_level', 'label' => 'Reorder level', 'type' => 'decimal', 'col' => 3, 'rules' => ['nullable', 'numeric', 'min:0'], 'default' => '0'];
-            $fields[] = ['name' => 'track_stock', 'label' => 'Keep stock of this product', 'type' => 'checkbox', 'default' => true];
-        }
+        $fields[] = ['name' => 'reorder_level', 'label' => 'Reorder level', 'type' => 'decimal', 'col' => 3, 'rules' => ['nullable', 'numeric', 'min:0'], 'default' => '0'];
+        $fields[] = ['name' => 'track_stock', 'label' => 'Keep stock of this product', 'type' => 'checkbox', 'default' => true];
         $fields[] = ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'default' => true];
         $fields[] = ['name' => 'notes', 'label' => 'Notes', 'type' => 'textarea', 'col' => 12, 'rules' => ['nullable', 'string', 'max:2000']];
 
@@ -88,9 +74,6 @@ class ProductController extends CrudController
             if (array_key_exists($number, $data)) {
                 $data[$number] = $data[$number] ?? 0;
             }
-        }
-        if ($data['type'] === Product::SERVICE) {
-            $data['track_stock'] = false; // a service never moves inventory
         }
 
         return $data;
@@ -111,7 +94,6 @@ class ProductController extends CrudController
     protected function headerLinks(Request $request): array
     {
         return [
-            ['label' => $this->type() === Product::SERVICE ? __('Products') : __('Services'), 'url' => route('products.index', ['type' => $this->type() === Product::SERVICE ? Product::PRODUCT : Product::SERVICE])],
             ['label' => __('Categories'), 'url' => route('product-categories.index')],
             ['label' => __('Units'), 'url' => route('units.index')],
         ];

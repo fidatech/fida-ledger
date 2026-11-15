@@ -16,7 +16,7 @@
 <div class="table-responsive mt-4">
     <table class="table align-middle w-100">
         <thead><tr>
-            <th style="min-width:170px">{{ __('Product or service') }}</th><th style="min-width:200px">{{ __('Description') }} *</th><th style="width:100px">{{ __('Quantity') }} *</th><th style="width:130px">{{ __('Price') }} *</th>
+            <th style="min-width:170px">{{ __('Product') }}</th><th style="min-width:200px">{{ __('Description') }} *</th><th style="width:100px">{{ __('Quantity') }} *</th><th style="width:130px">{{ __('Price') }} *</th>
             @if ($selling)<th style="width:110px">{{ __('Discount') }}</th><th style="width:90px">{{ __('Tax %') }}</th><th style="min-width:160px">{{ __('Income account') }} *</th>@endif
             <th style="width:44px"></th>
         </tr></thead>

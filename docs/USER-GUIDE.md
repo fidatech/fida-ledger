@@ -32,7 +32,7 @@ screen posts to one double-entry ledger, so the reports always agree with each o
 
 ## Business version
 
-Products & Services, Purchasing (order, receive, bill, return), Inventory (warehouses, average
+Products, Purchasing (order, receive, bill, return), Inventory (warehouses, average
 cost, transfers, adjustments, counts), Sales (quotation, order, deliver, invoice), Point of
 Sale (registers, cashier sessions, cash count), Fixed Assets (monthly straight-line
 depreciation, disposal), Payroll (employees, advances, monthly run, payslips), and Banking &

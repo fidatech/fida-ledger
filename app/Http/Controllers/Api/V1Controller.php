@@ -137,7 +137,6 @@ class V1Controller extends Controller
     {
         $term = trim((string) $request->query('q', ''));
         $page = Product::query()
-            ->when(in_array($request->query('type'), ['product', 'service'], true), fn ($q) => $q->where('type', $request->query('type')))
             ->when(! $request->boolean('inactive'), fn ($q) => $q->where('is_active', true))
             ->when($term !== '', fn ($q) => $q->where(fn ($inner) => $inner->where('name', 'like', '%'.$term.'%')->orWhere('sku', 'like', '%'.$term.'%')->orWhere('barcode', $term)))
             ->orderBy('name')

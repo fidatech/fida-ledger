@@ -55,7 +55,7 @@ or tested where this was written. The routes do not depend on the scheme, so San
 | POST | `/money` | money.create, write key | Record Money In or Money Out |
 | GET | `/invoices` | invoices.view | Filters: `type`, `status`, `customer`, `from`, `until` |
 | GET | `/invoices/{id}` | invoices.view | One invoice with its lines |
-| GET | `/products` | products.view, Products module | Filters: `type`, `q`, `inactive=1` |
+| GET | `/products` | products.view, Products module | Filters: `q`, `inactive=1` |
 
 ### Record money
 

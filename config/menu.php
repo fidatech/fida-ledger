@@ -44,9 +44,8 @@ return [
     ]],
 
     ['heading' => 'Business Operations'],
-    ['label' => 'Products & Services', 'icon' => 'boxes-stacked', 'module' => 'products', 'can' => 'products.view', 'children' => [
+    ['label' => 'Products', 'icon' => 'boxes-stacked', 'module' => 'products', 'can' => 'products.view', 'children' => [
         ['label' => 'All Products', 'route' => 'products.index', 'params' => ['type' => 'product'], 'active' => 'products.*'],
-        ['label' => 'Services', 'route' => 'products.index', 'params' => ['type' => 'service'], 'active' => 'products.*'],
         ['label' => 'Categories', 'route' => 'product-categories.index', 'active' => 'product-categories.*'],
         ['label' => 'Units', 'route' => 'units.index', 'active' => 'units.*'],
     ]],

@@ -69,7 +69,7 @@
         <div class="table-responsive mt-4">
             <table class="table align-middle w-100" id="lineTable">
                 <thead><tr>
-                    @if ($products->isNotEmpty())<th style="min-width:160px">{{ __('Product or service') }}</th>@endif
+                    @if ($products->isNotEmpty())<th style="min-width:160px">{{ __('Product') }}</th>@endif
                     <th style="min-width:220px">{{ __('Description') }} *</th><th style="width:100px">{{ __('Quantity') }} *</th><th style="width:130px">{{ __('Price') }} *</th><th style="width:110px">{{ __('Discount') }}</th><th style="width:90px">{{ __('Tax %') }}</th><th style="min-width:170px">{{ __('Income account') }} *</th><th style="width:44px"></th>
                 </tr></thead>
                 <tbody id="lineRows">

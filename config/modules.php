@@ -14,8 +14,8 @@
 */
 return [
     'products' => [
-        'name' => 'Products & Services',
-        'description' => 'One catalogue of products and services with units, variants, price lists and barcodes.',
+        'name' => 'Products',
+        'description' => 'One catalogue of products with units, variants, price lists and barcodes.',
         'icon' => 'boxes-stacked',
         'requires' => [],
     ],

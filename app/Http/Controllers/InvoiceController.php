@@ -103,7 +103,7 @@ class InvoiceController extends Controller
             'customers' => Account::postable()->where('kind', 'customer')->orderBy('name')->get(),
             // every income account except "Exchange gain or loss", which only the system posts to
             'incomeAccounts' => Account::postable()->where('class', 'income')->where(fn ($q) => $q->whereNull('system_key')->orWhere('system_key', '!=', 'exchange_difference'))->orderBy('code')->get(),
-            // the catalogue fills a line in one click when the Products & Services module is on
+            // the catalogue fills a line in one click when the Products module is on
             'products' => module_on('products') ? Product::where('is_active', true)->orderBy('name')->get() : collect(),
         ]);
     }
