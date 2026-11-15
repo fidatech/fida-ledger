@@ -27,7 +27,8 @@ abstract class TestCase extends BaseTestCase
 
     protected function user(string $email = 'owner@acme.test'): User
     {
-        return User::create(['name' => 'Owner', 'email' => $email, 'password' => 'password123']);
+        // read back from the database, so columns with a default (is_active) are filled in
+        return User::create(['name' => 'Owner', 'email' => $email, 'password' => 'password123'])->fresh();
     }
 
     /** A new company (pending: not paid yet) with its owner. */
